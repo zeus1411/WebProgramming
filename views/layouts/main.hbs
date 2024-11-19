@@ -3,24 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Trang Đọc Báo</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
     integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
 
 <body>
-    
+    <div class="container mt-4">
+        <!-- Menu chuyên mục -->
+        <nav class="nav mb-4">
+            {{#each categories}}
+                <a class="nav-link" href="#">{{this}}</a>
+            {{/each}}
+        </nav>
 
+        <!-- Danh sách bài viết -->
+        <section class="article-list row">
+            {{#each articles}}
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <img src="{{image}}" class="card-img-top" alt="Ảnh bài viết">
+                        <div class="card-body">
+                            <h5 class="card-title">{{title}}</h5>
+                            <p class="card-text">{{summary}}</p>
+                            <p class="text-muted"><small>Chuyên Mục: {{category}} - {{date}}</small></p>
+                            <div class="article-tags">
+                                {{#each tags}}
+                                    <span class="badge badge-secondary">{{this}}</span>
+                                {{/each}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {{/each}}
+        </section>
 
+        <!-- Phân trang -->
+        <nav>
+            <ul class="pagination">
+                {{#each pagination}}
+                    <li class="page-item {{#if active}}active{{/if}}">
+                        <a class="page-link" href="#">{{this}}</a>
+                    </li>
+                {{/each}}
+                <li class="page-item">
+                    <a class="page-link" href="#">Tiếp</a>
+                </li>
+            </ul>
+        </nav>
 
-  <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"
+        <!-- Chi tiết bài viết -->
+        <section class="article-detail mt-5">
+            <img src="{{selectedArticle.image}}" class="img-fluid mb-3" alt="Ảnh đại diện bài viết">
+            <h1>{{selectedArticle.title}}</h1>
+            <p class="text-muted"><small>Chuyên Mục: {{selectedArticle.category}} - {{selectedArticle.date}}</small></p>
+            <div class="article-tags mb-3">
+                {{#each selectedArticle.tags}}
+                    <span class="badge badge-secondary">{{this}}</span>
+                {{/each}}
+            </div>
+            <p>{{selectedArticle.content}}</p>
+        </section>
+
+        <!-- Bình luận -->
+        <section class="comments mt-4">
+            <h3>Bình Luận</h3>
+            {{#each comments}}
+                <div class="media mb-3">
+                    <div class="media-body">
+                        <h5 class="mt-0">{{name}} <small class="text-muted">{{date}}</small></h5>
+                        <p>{{text}}</p>
+                    </div>
+                </div>
+            {{/each}}
+        </section>
+
+        <!-- Form bình luận -->
+        <form class="comment-form mt-4">
+            <div class="form-group">
+                <input type="text" class="form-control" placeholder="Tên của bạn">
+            </div>
+            <div class="form-group">
+                <input type="email" class="form-control" placeholder="Email của bạn">
+            </div>
+            <div class="form-group">
+                <textarea class="form-control" placeholder="Nội dung bình luận" rows="5"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Gửi Bình Luận</button>
+        </form>
+
+        <!-- 5 bài viết ngẫu nhiên cùng chuyên mục -->
+        <section class="related-articles mt-5">
+            <h3>Bài Viết Liên Quan</h3>
+            <div class="row">
+                {{#each relatedArticles}}
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <img src="{{image}}" class="card-img-top" alt="Ảnh bài viết">
+                            <div class="card-body">
+                                <h5 class="card-title">{{title}}</h5>
+                                <p class="text-muted"><small>{{date}}</small></p>
+                            </div>
+                        </div>
+                    </div>
+                {{/each}}
+            </div>
+        </section>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"
     integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
     crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
     integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
     crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"
     integrity="sha384-+sLIOodYLS7CIrQpBjl+C7nPvqq+FbNUBDunl/OZv93DB7Ln/533i8e/mZXLi/P+"
     crossorigin="anonymous"></script>
 </body>
