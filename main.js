@@ -35,8 +35,8 @@ app.use('/static', express.static('static'));
 
 // middleware
 app.use(async function (req, res, next) {
-  const categories = await categoryService.findAllWithDetails();
-  res.locals.lcCategories = categories;
+  // const categories = await categoryService.findAllWithDetails();
+  // res.locals.lcCategories = categories;
   next();
 });
 
