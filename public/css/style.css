@@ -1,0 +1,14 @@
+body{
+    background: #E2F1E7;
+}
+nav{
+    background: #243642;
+    
+}
+.navbar-brand{
+    font-family: 'Candal', serif !important;
+
+}
+.navbar-brand span{
+    color: #629584;
+}
