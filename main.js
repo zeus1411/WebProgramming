@@ -13,6 +13,8 @@ import categoryService from './services/category.service.js';
 
 const app = express();
 
+app.use(express.static('public'));
+
 app.use(express.urlencoded({
   extended: true
 }));
@@ -35,8 +37,8 @@ app.use('/static', express.static('static'));
 
 // middleware
 app.use(async function (req, res, next) {
-  const categories = await categoryService.findAllWithDetails();
-  res.locals.lcCategories = categories;
+  //const categories = await categoryService.findAllWithDetails();
+  //res.locals.lcCategories = categories;
   next();
 });
 
