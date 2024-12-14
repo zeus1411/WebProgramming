@@ -5,9 +5,9 @@ import subcategoryModel from '../models/subcategory.model.js';
 import _postModel from '../models/_posts.model.js';
 const router = express.Router();
 import moment from 'moment';
-import userModel from '../models/user.model';
+import userModel from '../models/user.model.js';
 import multer from 'multer';
-import commentModel from '../models/comment.model';
+import commentModel from '../models/comment.model.js';
 import expressHandlebarsSections from 'express-handlebars-sections';
 
 moment.locale('vi');

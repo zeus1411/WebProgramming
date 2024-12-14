@@ -1,7 +1,7 @@
 import express from 'express';
-import userModel from '../models/user.model';
+import userModel from '../models/user.model.js';
 import bcrypt from 'bcryptjs';
-import utilsModel from '../models/utils.model');
+import utilsModel from '../models/utils.model.js';
 
 const router = express.Router();
 

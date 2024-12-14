@@ -1,10 +1,10 @@
 import express from 'express';
-import userModel from '../models/user.model';
+import userModel from '../models/user.model.js';
 import categoryModel from '../models/category.model.js';
 import subcategoryModel from '../models/subcategory.model.js';
 import postModel from '../models/posts.model.js';
 import moment from 'moment';
-import commentModel from '../models/comment.model';
+import commentModel from '../models/comment.model.js';
 import _postModel from '../models/_post.model.js';
 const router = express.Router();
 
