@@ -1,25 +1,36 @@
 import db from '../utils/db.js';
 
-const TBL_COMMENT = 'comment';
-const TBL_COMMENTLIKE = 'commentlike';
-
 export default {
-    add: function(entity) {
-        return db.add(TBL_COMMENT, entity);
+    // Thêm bình luận
+    add: function (entity) {
+      return db('comment').insert(entity);
     },
-    addLike: function(entity) {
-        return db.add(TBL_COMMENTLIKE, entity);
+  
+    // Thêm lượt thích bình luận
+    addLike: function (entity) {
+      return db('commentlike').insert(entity);
     },
+  
+    // Lấy bình luận theo PostID
     singleByPostID: function (id) {
-        return db.load(`select * from ${TBL_COMMENT} where PostID = ${id}`);
+      return db('comment').where('PostID', id);
     },
+  
+    // Đếm số bình luận theo PostID
     countByPostID: function (id) {
-        return db.load(`select count(*) as Count from ${TBL_COMMENT} where PostID = ${id}`);
+      return db('comment')
+        .where('PostID', id)
+        .count('* as Count')
+        .first(); // Trả về một hàng duy nhất
     },
+  
+    // Lấy bình luận theo ComID
     singleByComID: function (id) {
-        return db.load(`select * from ${TBL_COMMENT} where ComID = ${id}`);
+      return db('comment').where('ComID', id).first();
     },
-    singleLikeByComID: function(id) {
-        return db.load(`select * from ${TBL_COMMENTLIKE} where ComID = ${id}`)
+  
+    // Lấy lượt thích bình luận theo ComID
+    singleLikeByComID: function (id) {
+      return db('commentlike').where('ComID', id).first();
     }
-};
+  };

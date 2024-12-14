@@ -1,84 +1,97 @@
 import db from '../utils/db.js';
 
-const TBL_POSTS = 'posts'; 
-
 export default {
-    all: function() {
-      return db.load(`select * from ${TBL_POSTS}`)
+  // Lấy tất cả bài viết
+  all: function () {
+    return db('posts'); // Truy vấn trực tiếp bảng 'posts'
   },
-  allByStatus: function(status) {
-      return db.load(`select * from ${TBL_POSTS} where Duyet = ${status}`)
-  },
-  allPostSapPublic: function() {
-      return db.load(`select * from ${TBL_POSTS} where Duyet = 2`)
-  },
-  add: function(entity) {
-      return db.add(TBL_POSTS, entity);
-  },
-  singleByCID: function (cid) {
-    return db.load(`select * from ${TBL_POSTS} where CID = ${cid}`);
-  },
-  singleByCIDXuatBan: function (cid) {
-    return db.load(`select * from ${TBL_POSTS} where CID = ${cid} AND Duyet = 3 ORDER BY TimePost DESC`);
-  },
-  singleBySCIDXuatBan: function (id) {
-    return db.load(`select * from ${TBL_POSTS} where SCID = ${id} AND Duyet = 3 ORDER BY TimePost DESC`);
-  },
-  singleByCIDStatus: function (cid, status) {
-      return db.load(`select * from ${TBL_POSTS} where CID = ${cid} and Duyet = ${status}`);
-  },
-  singleByPostID: function (id) {
-      return db.load(`select * from ${TBL_POSTS} where PostID = ${id}`);
-  },
-  singleByUserIDStatus: function (id, status) {
-      return db.load(`select * from ${TBL_POSTS} where UID = ${id} and Duyet = ${status}`);
-  },
-  singleBySCID: function (id) {
-      return db.load(`select * from ${TBL_POSTS} where SCID = ${id}`);
-  },
-  singleByUserID: function (id) {
-    return db.load(`select * from ${TBL_POSTS} where UID = ${id}`);
-  },
-  patch: function (entity) {
-      const condition = {
-        PostID: entity.PostID
-      }
-      delete entity.PostID;
-      return db.patch(TBL_POSTS, entity, condition);
-  },
-  move: function (id, cid, scid) {
-      const condition = {
-        PostID: id
-      };
-      const d = {
-        CID: cid,
-        SCID: scid
-      };
-      return db.patch(TBL_POSTS, d ,condition);
-  },
-  del: function (id) {
-      const condition = {
-        PostID: id
-      };
-      const d = {
-        xoa: 1
-      };
-      return db.patch(TBL_POSTS, d ,condition);
-  },
-  restore: function (id) {
-      const condition = {
-        PostID: id
-      };
-      const d = {
-        xoa: 0
-      };
-      return db.patch(TBL_POSTS, d ,condition);
-  },
-  del2: function (id) {
-    const condition = {
-      PostID: id
-    }
-    return db.del(TBL_POSTS, condition);
-  }
 
+  // Lấy bài viết theo trạng thái
+  allByStatus: function (status) {
+    return db('posts').where('Duyet', status);
+  },
+
+  // Lấy bài viết sắp public
+  allPostSapPublic: function () {
+    return db('posts').where('Duyet', 2);
+  },
+
+  // Thêm bài viết mới
+  add: function (entity) {
+    return db('posts').insert(entity);
+  },
+
+  // Lấy bài viết theo CID
+  singleByCID: function (cid) {
+    return db('posts').where('CID', cid).first();
+  },
+
+  // Lấy bài viết xuất bản theo CID
+  singleByCIDXuatBan: function (cid) {
+    return db('posts')
+      .where('CID', cid)
+      .andWhere('Duyet', 3)
+      .orderBy('TimePost', 'desc')
+      .first();
+  },
+
+  // Lấy bài viết xuất bản theo SCID
+  singleBySCIDXuatBan: function (id) {
+    return db('posts')
+      .where('SCID', id)
+      .andWhere('Duyet', 3)
+      .orderBy('TimePost', 'desc')
+      .first();
+  },
+
+  // Lấy bài viết theo CID và trạng thái
+  singleByCIDStatus: function (cid, status) {
+    return db('posts').where('CID', cid).andWhere('Duyet', status).first();
+  },
+
+  // Lấy bài viết theo PostID
+  singleByPostID: function (id) {
+    return db('posts').where('PostID', id).first();
+  },
+
+  // Lấy bài viết theo UID và trạng thái
+  singleByUserIDStatus: function (id, status) {
+    return db('posts').where('UID', id).andWhere('Duyet', status).first();
+  },
+
+  // Lấy bài viết theo SCID
+  singleBySCID: function (id) {
+    return db('posts').where('SCID', id).first();
+  },
+
+  // Lấy bài viết theo UID
+  singleByUserID: function (id) {
+    return db('posts').where('UID', id).first();
+  },
+
+  // Cập nhật bài viết
+  patch: function (entity) {
+    const { PostID, ...updateData } = entity; // Tách PostID khỏi dữ liệu cập nhật
+    return db('posts').where('PostID', PostID).update(updateData);
+  },
+
+  // Di chuyển bài viết sang CID và SCID mới
+  move: function (id, cid, scid) {
+    return db('posts').where('PostID', id).update({ CID: cid, SCID: scid });
+  },
+
+  // Đánh dấu bài viết là đã xóa
+  del: function (id) {
+    return db('posts').where('PostID', id).update({ xoa: 1 });
+  },
+
+  // Khôi phục bài viết
+  restore: function (id) {
+    return db('posts').where('PostID', id).update({ xoa: 0 });
+  },
+
+  // Xóa bài viết vĩnh viễn
+  del2: function (id) {
+    return db('posts').where('PostID', id).del();
+  }
 };

@@ -1,42 +1,91 @@
 import db from '../utils/db.js';
 
-const TBL_POSTS = 'posts';
-
 export default {
+    // Lấy bài viết theo PostID đã duyệt
     singleByPostID: function (id) {
-        return db.load(`select * from ${TBL_POSTS} where PostID = ${id} and Duyet = 3`);
+      return db('posts').where({ PostID: id, Duyet: 3 });
     },
+  
+    // Lấy 5 bài viết ngẫu nhiên trong cùng chuyên mục
     tincungchuyenmuc: function (id) {
-        return db.load(`select * from ${TBL_POSTS} where SCID = ${id} and Duyet = 3 ORDER BY RAND() LIMIT 5`);
+      return db('posts')
+        .where({ SCID: id, Duyet: 3 })
+        .orderByRaw('RAND()')
+        .limit(5);
     },
+  
+    // Lấy bài viết theo UserID
     singleByUserID: function (id) {
-        return db.load(`select * from ${TBL_POSTS} where UID = ${id}`);
+      return db('posts').where({ UID: id });
     },
+  
+    // Lấy bài viết mới nhất đã duyệt
     new: function () {
-        return db.load(`select * from ${TBL_POSTS} where Duyet = 3 ORDER BY TimePost DESC`);
+      return db('posts')
+        .where({ Duyet: 3 })
+        .orderBy('TimePost', 'DESC');
     },
+  
+    // Lấy bài viết mới nhất trong chuyên mục
     new1: function (id) {
-        return db.load(`select * from ${TBL_POSTS} where Duyet = 3 and CID = ${id} ORDER BY TimePost DESC LIMIT 1`);
+      return db('posts')
+        .where({ Duyet: 3, CID: id })
+        .orderBy('TimePost', 'DESC')
+        .limit(1);
     },
+  
+    // Lấy 10 bài viết mới nhất đã duyệt
     new10: function () {
-        return db.load(`select * from ${TBL_POSTS} where Duyet = 3 ORDER BY TimePost DESC LIMIT 10`);
+      return db('posts')
+        .where({ Duyet: 3 })
+        .orderBy('TimePost', 'DESC')
+        .limit(10);
     },
+  
+    // Lấy 10 bài viết hot nhất (xếp theo lượt xem)
     hot10: function () {
-        return db.load(`select * from ${TBL_POSTS} where Duyet = 3 ORDER BY view DESC LIMIT 10`);
+      return db('posts')
+        .where({ Duyet: 3 })
+        .orderBy('view', 'DESC')
+        .limit(10);
     },
+  
+    // Lấy toàn bộ bài viết hot (xếp theo lượt xem)
     hot: function () {
-        return db.load(`select * from ${TBL_POSTS} where Duyet = 3 ORDER BY view DESC`);
+      return db('posts')
+        .where({ Duyet: 3 })
+        .orderBy('view', 'DESC');
     },
-    best: function() {
-        return db.load(`select * from ${TBL_POSTS} where Duyet = 3 ORDER BY view DESC LIMIT 1`)
+  
+    // Lấy bài viết hot nhất
+    best: function () {
+      return db('posts')
+        .where({ Duyet: 3 })
+        .orderBy('view', 'DESC')
+        .limit(1);
     },
+  
+    // Lấy 4 bài viết hot nhất
     hot2: function () {
-        return db.load(`select * from ${TBL_POSTS} where Duyet = 3 ORDER BY view DESC LIMIT 4`);
+      return db('posts')
+        .where({ Duyet: 3 })
+        .orderBy('view', 'DESC')
+        .limit(4);
     },
+  
+    // Tăng lượt xem bài viết
     upview: function (id) {
-        return db.load(`UPDATE ${TBL_POSTS} SET view = view + 1 where PostID = ${id}`)
+      return db('posts')
+        .where({ PostID: id })
+        .increment('view', 1);
     },
+  
+    // Tìm kiếm bài viết theo từ khóa
     search: function (value) {
-        return db.load(`select DISTINCT * from ${TBL_POSTS} where PostTitle like N'%${value}%' OR SumContent like N'%${value}%' OR Content like N'%${value}%' ORDER BY Premium DESC`);
+      return db('posts')
+        .where('PostTitle', 'like', `%${value}%`)
+        .orWhere('SumContent', 'like', `%${value}%`)
+        .orWhere('Content', 'like', `%${value}%`)
+        .orderBy('Premium', 'DESC');
     },
-};
+  };
