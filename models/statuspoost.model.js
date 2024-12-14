@@ -1,4 +1,4 @@
-import db from '../utils/db';
+import db from '../utils/db.js';
 
 export default {
     // Thêm trạng thái bài viết mới

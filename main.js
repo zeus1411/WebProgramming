@@ -185,37 +185,37 @@ app.get('/admin', function (req, res) {
     }
     });
 
-import categoryRouter from './routes/category.route';
+import categoryRouter from './routes/category.route.js';
 app.use('/admin/categories', categoryRouter);
 
-import subcategoryRouter from './routes/subcategory.route';
+import subcategoryRouter from './routes/subcategory.route.js';
 app.use('/admin/subcategories', subcategoryRouter);
 
-import postRouter from './routes/posts.route';
+import postRouter from './routes/posts.route.js';
 app.use('/admin/posts', postRouter);
 
-import userRouter from './routes/user.route';
+import userRouter from './routes/user.route.js';
 app.use('/', userRouter);
 
-import usersRouter from './routes/users.route';
+import usersRouter from './routes/users.route.js';
 app.use('/admin/users', usersRouter);
 
-import utilsRouter from './routes/utils.route';
+import utilsRouter from './routes/utils.route.js';
 app.use('/', utilsRouter);
 
-import _userModel from './routes/_user.route';
+import _userModel from './routes/_user.router.js';
 app.use('/', _userModel);
 
-import _postRouter from './routes/_post.route';
+import _postRouter from './routes/_post.route.js';
 app.use('/post', _postRouter);
 
-import writerPanelRouter from './routes/writerpanel.route';
+import writerPanelRouter from './routes/writerpanel.route.js';
 app.use('/writerpanel', writerPanelRouter);
 
-import editorPanelRouter from './routes/editorpanel.route';
+import editorPanelRouter from './routes/editorpanel.route.js';
 app.use('/editorpanel', editorPanelRouter);
 
-import userModel from './models/user.model';
+import userModel from './models/user.model.js';
 
 app.route('/dangnhap')
 .get(function(req, res) {

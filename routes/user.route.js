@@ -76,4 +76,4 @@ router.get('/premium', async function (req, res) {
     res.redirect('/profile')
 })
 
-module.exports = router;
+export default router;

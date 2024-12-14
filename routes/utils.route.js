@@ -5,7 +5,7 @@ import subcategoryModel from '../models/subcategory.model.js';
 import postModel from '../models/posts.model.js';
 import moment from 'moment';
 import commentModel from '../models/comment.model.js';
-import _postModel from '../models/_post.model.js';
+import _postModel from '../models/_posts.model.js';
 const router = express.Router();
 
 router.get('/cat/:id', async function (req, res) {
@@ -101,4 +101,4 @@ router.get('/comment/like/:id', async function (req, res) {
 })
 
 
-module.exports = router;
+export default router;
