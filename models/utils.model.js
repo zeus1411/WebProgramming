@@ -1,6 +1,4 @@
-import db from '../utils/db';
-
-const TBL_CategoryManager = 'categorymanager';
+import db from '../utils/db.js';
 
 
 export default {
