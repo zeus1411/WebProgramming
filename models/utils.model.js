@@ -1,6 +1,6 @@
 import db from '../utils/db';
 
-const TBL_CategoryManager = 'categorymanager';
+
 
 
 export default {

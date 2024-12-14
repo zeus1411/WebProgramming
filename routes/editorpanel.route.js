@@ -5,7 +5,7 @@ import subcategoryModel from '../models/subcategory.model.js';
 import postModel from '../models/posts.model.js';
 import moment from 'moment';
 import commentModel from '../models/comment.model.js';
-import utilsModel from require('../models/utils.model.js');
+import utilsModel from '../models/utils.model.js';
 const router = express.Router();
 
 router.get('/', async function (req, res) {
