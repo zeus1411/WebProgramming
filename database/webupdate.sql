@@ -5,7 +5,7 @@
  Source Server Type    : MySQL
  Source Server Version : 100432 (10.4.32-MariaDB)
  Source Host           : localhost:3306
- Source Schema         : webupdating
+ Source Schema         : webupdate
 
  Target Server Type    : MySQL
  Target Server Version : 100432 (10.4.32-MariaDB)
