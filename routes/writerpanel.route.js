@@ -1,14 +1,15 @@
 import express from 'express';
-import userModel from '../models/user.model';
+import userModel from '../models/user.model.js';
 import categoryModel from '../models/category.model.js';
 import subcategoryModel from '../models/subcategory.model.js';
 import postModel from '../models/posts.model.js';
 import moment from 'moment';
-import commentModel from '../models/comment.model';
-import { compareSync } from 'bcryptjs';
-import { post } from './posts.route';
+import commentModel from '../models/comment.model.js';
+import cpS from 'bcryptjs';
+import post from './posts.route.js';
 const router = express.Router();
 
+const { compareSync } = cpS;
 
 router.get('/', async function (req, res) {
     if (req.isAuthenticated() && req.user.Permission === 1) {
@@ -71,4 +72,4 @@ router.post('/post', async function (req, res) {
 
 
 
-module.exports = router;
+export default router;

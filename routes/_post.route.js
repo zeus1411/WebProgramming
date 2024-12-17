@@ -3,12 +3,13 @@ import postModel from '../models/posts.model.js';
 import categoryModel from '../models/category.model.js';
 import subcategoryModel from '../models/subcategory.model.js';
 import _postModel from '../models/_posts.model.js';
-const router = express.Router();
 import moment from 'moment';
-import userModel from '../models/user.model';
+import userModel from '../models/user.model.js';
 import multer from 'multer';
-import commentModel from '../models/comment.model';
+import commentModel from '../models/comment.model.js';
 import expressHandlebarsSections from 'express-handlebars-sections';
+
+const router = express.Router();
 
 moment.locale('vi');
 
@@ -95,4 +96,4 @@ router.post('/:id', async function (req, res) {
 })
 
 
-module.exports = router;
+export default router;

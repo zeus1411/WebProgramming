@@ -1,4 +1,3 @@
-
 import express from 'express';
 import session from 'express-session';
 import { engine } from 'express-handlebars';
@@ -186,37 +185,37 @@ app.get('/admin', function (req, res) {
     }
     });
 
-const categoryRouter = require('./routes/category.route');
+import categoryRouter from './routes/category.route.js';
 app.use('/admin/categories', categoryRouter);
 
-const subcategoryRouter = require('./routes/subcategory.route');
+import subcategoryRouter from './routes/subcategory.route.js';
 app.use('/admin/subcategories', subcategoryRouter);
 
-const postRouter = require('./routes/posts.route');
+import postRouter from './routes/posts.route.js';
 app.use('/admin/posts', postRouter);
 
-const userRouter = require('./routes/user.route');
+import userRouter from './routes/user.route.js';
 app.use('/', userRouter);
 
-const usersRouter = require('./routes/users.route');
+import usersRouter from './routes/users.route.js';
 app.use('/admin/users', usersRouter);
 
-const utilsRouter = require('./routes/utils.route');
+import utilsRouter from './routes/utils.route.js';
 app.use('/', utilsRouter);
 
-const _userModel = require('./routes/_user.route');
+import _userModel from './routes/_user.router.js';
 app.use('/', _userModel);
 
-const _postRouter = require('./routes/_post.route');
+import _postRouter from './routes/_post.route.js';
 app.use('/post', _postRouter);
 
-const writerPanelRouter = require('./routes/writerpanel.route');
+import writerPanelRouter from './routes/writerpanel.route.js';
 app.use('/writerpanel', writerPanelRouter);
 
-const editorPanelRouter = require('./routes/editorpanel.route');
+import editorPanelRouter from './routes/editorpanel.route.js';
 app.use('/editorpanel', editorPanelRouter);
 
-const userModel = require('./models/user.model');
+import userModel from './models/user.model.js';
 
 app.route('/dangnhap')
 .get(function(req, res) {

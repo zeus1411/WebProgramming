@@ -1,6 +1,6 @@
 import express from 'express';
-import userModel from '../models/user.model';
-import utilsModel from '../models/utils.model';
+import userModel from '../models/user.model.js';
+import utilsModel from '../models/utils.model.js';
 import bcrypt from 'bcryptjs';
 import categoryModel from '../models/category.model.js';
 import moment from 'moment';
@@ -141,4 +141,4 @@ router.get('/delete/:id', async function (req, res) {
     }
 })
 
-module.exports = router;
+export default router;

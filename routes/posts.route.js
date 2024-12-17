@@ -1,10 +1,10 @@
 import express from 'express';
 import postModel from '../models/posts.model.js';
 import categoryModel from '../models/category.model.js';
-import subcategoryModel from '../models/subcategory.model';
+import subcategoryModel from '../models/subcategory.model.js';
 const router = express.Router();
 import moment from 'moment';
-import userModel from '../models/user.model';
+import userModel from '../models/user.model.js';
 import multer from 'multer';
 moment.locale('vi');
 
@@ -294,4 +294,4 @@ router.get('/delete/:id', async function (req, res) {
     }
 })
 
-module.exports = router;
+export default router;
