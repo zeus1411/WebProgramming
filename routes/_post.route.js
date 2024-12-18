@@ -37,7 +37,7 @@ router.get('/new', async function (req, res) {
     res.render('_vwPosts/new_news', {
         post
     });
-})
+});
 
 router.get('/hot', async function (req, res) {
     const post = await _postModel.hot();
@@ -67,33 +67,38 @@ router.get('/hot', async function (req, res) {
 
 router.get('/:id', async function (req, res) {
     const id = +req.params.id || -1;
-    const pst = await postModel.singleByPostID(id);
-    const post = pst[0];
+    
+    // Thay đổi cách xử lý kết quả từ singleByPostID
+    const post = await postModel.singleByPostID(id);
 
-    // Kiểm tra post có tồn tại không
+    // Kiểm tra nếu không tìm thấy bài viết
     if (!post) {
-        return res.status(404).send('Post not found');
+        return res.status(404).render('_vwPosts/error', { 
+            message: 'Bài viết không tồn tại' 
+        });
     }
 
-    // Kiểm tra điều kiện Premium an toàn hơn
+    // Kiểm tra điều kiện Premium
     if (post.Premium === 1 && (!req.isAuthenticated() || (req.user && req.user.Premium !== 1))) {
-        const premium = true;
         return res.render('_vwPosts/news', { 
-            premium
+            premium: true 
         });
     } 
 
     const ufullname = await userModel.singleByUserID(post.UID);
-    if (ufullname !== null) { 
+    if (ufullname) { 
         post.U_FullName = ufullname.Fullname; 
     }
+    
     post.Time = moment(post.TimePost, 'YYYY-MM-DD hh:mm:ss').format('hh:mmA DD/MM/YYYY');
     
     const comment = await commentModel.singleByPostID(id);
-    for (var i = 0; i < comment.length; i++) {
-        const u = await userModel.singleByUserID(comment[i].UID);
-        comment[i].username = u.UserName;
-        comment[i].Time = moment(comment[i].Date, 'YYYY-MM-DD hh:mm:ss').fromNow();
+    for (const cmt of comment) {
+        const u = await userModel.singleByUserID(cmt.UID);
+        if (u) {
+            cmt.username = u.UserName;
+            cmt.Time = moment(cmt.Date, 'YYYY-MM-DD hh:mm:ss').fromNow();
+        }
     }
     
     const tincungchuyenmuc = await _postModel.tincungchuyenmuc(post.SCID);
@@ -105,7 +110,7 @@ router.get('/:id', async function (req, res) {
         tincungchuyenmuc,
         empty: tincungchuyenmuc.length === 0
     });
-})
+});
 
 router.post('/:id', async function (req, res) {
     const id = +req.params.id || -1;
@@ -116,7 +121,7 @@ router.post('/:id', async function (req, res) {
     req.body.Date = time;
     await commentModel.add(req.body);
     res.redirect('/post/'+id);
-})
+});
 
 
 export default router;
