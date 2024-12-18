@@ -15,7 +15,7 @@ router.get('/', async function (req, res) {
             }
         }
 
-        res.render('vwCategories/list', {
+        res.render('vwCategory/list', {
             categories: list,
             empty: list.length === 0
         });
@@ -26,7 +26,7 @@ router.get('/', async function (req, res) {
 
 router.get('/add', function (req, res) {
     if (req.isAuthenticated() && req.user.Permission === 3) {
-        res.render('vwCategories/add');
+        res.render('vwCategory/add');
     } else {
         res.redirect('/')
     }
@@ -35,7 +35,7 @@ router.get('/add', function (req, res) {
 router.post('/add', async function (req, res) {
     if (req.isAuthenticated() && req.user.Permission === 3) {
         await categoryModel.add(req.body);
-        res.render('vwCategories/add');
+        res.render('vwCategory/add');
     } else {
         res.redirect('/')
     }
@@ -95,7 +95,7 @@ router.get('/edit/:id', async function (req, res) {
         return res.send('Invalid parameter.');
     
         const category = rows[0];
-        res.render('vwCategories/edit', { category });
+        res.render('vwCategory/edit', { category });
     } else {
         res.redirect('/')
     }

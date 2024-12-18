@@ -26,7 +26,7 @@ router.get('/cat/:id', async function (req, res) {
         if (post[i].Premium === 1) { post[i].Pre = true; }
     }
 
-    res.render('_vwPosts/post_cat', {
+    res.render('_vwPosts/news_categories', {
         category,
         subcategory,
         post
@@ -51,7 +51,7 @@ router.get('/subcat/:id', async function (req, res) {
             post[i].Pre = true;
         }
     }
-    res.render('_vwPosts/post_subcat', {
+    res.render('_vwPosts/new_subcategories', {
         subcategory,
         post
     })
