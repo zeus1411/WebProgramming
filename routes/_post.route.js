@@ -13,7 +13,7 @@ const router = express.Router();
 
 moment.locale('vi');
 
-router.get('/new', async function (req, res) {
+router.get('/new_news', async function (req, res) {
     const post = await _postModel.new();
     for (var i = 0; i < post.length; i++) {
         post[i].Time = moment(post[i].TimePost, 'YYYY-MM-DD hh:mm:ss').fromNow();
@@ -28,12 +28,12 @@ router.get('/new', async function (req, res) {
         }
     }
     
-    res.render('_vwPosts/new', {
+    res.render('_vwPosts/new_news', {
         post
     });
 })
 
-router.get('/hot', async function (req, res) {
+router.get('/hotnews', async function (req, res) {
     const post = await _postModel.hot();
     for (var i = 0; i < post.length; i++) {
         post[i].Time = moment(post[i].TimePost, 'YYYY-MM-DD hh:mm:ss').fromNow();
@@ -48,7 +48,7 @@ router.get('/hot', async function (req, res) {
         }
     }
     
-    res.render('_vwPosts/hot', {
+    res.render('_vwPosts/hotnews', {
         post
     });
 })
@@ -59,7 +59,7 @@ router.get('/:id', async function (req, res) {
     const post = pst[0];
     if (post.Premium === 1 && (req.isAuthenticated() || req.user.Premium !== 1)) {
             const premium = true;
-            res.render('_vwPosts/baiviet', { 
+            res.render('_vwPosts/news', { 
                 premium
             })
     } else {
@@ -74,7 +74,7 @@ router.get('/:id', async function (req, res) {
         }
         const tincungchuyenmuc = await _postModel.tincungchuyenmuc(post.SCID);
         await _postModel.upview(id);
-        res.render('_vwPosts/baiviet', {
+        res.render('_vwPosts/news', {
             post,
             comment,
             tincungchuyenmuc,
