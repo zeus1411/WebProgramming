@@ -198,7 +198,7 @@ router.post('/upload/:id', function (req, res) {
                 cb(null, tenfile);
             },
             destination(req, file, cb) {
-                cb(null, './public/images/avatarPost');
+                cb(null, './public/images');
             }
         })
 
@@ -227,7 +227,7 @@ router.get('/:id', async function (req, res) {
         rows.UserName = uid_post.UserName;
         rows.U_FullName = uid_post.Fullname;
         
-        res.render('vwPosts/baiviet', {
+        res.render('vwPosts/article', {
             rows
         });
     } else {
