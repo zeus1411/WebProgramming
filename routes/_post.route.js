@@ -69,32 +69,43 @@ router.get('/:id', async function (req, res) {
     const id = +req.params.id || -1;
     const pst = await postModel.singleByPostID(id);
     const post = pst[0];
-    if (post.Premium === 1 && (req.isAuthenticated() || req.user.Premium !== 1)) {
-            const premium = true;
-            res.render('_vwPosts/news', { 
-                premium
-            })
-    } else {
-        const ufullname = await userModel.singleByUserID(post.UID);
-        if (ufullname !== null) { post.U_FullName = ufullname.Fullname; }
-        post.Time = moment(post.TimePost, 'YYYY-MM-DD hh:mm:ss').format('hh:mmA DD/MM/YYYY');
-        const comment = await commentModel.singleByPostID(id);
-        for (var i = 0; i < comment.length; i++) {
-            const u = await userModel.singleByUserID(comment[i].UID);
-            comment[i].username = u.UserName;
-            comment[i].Time = moment(comment[i].Date, 'YYYY-MM-DD hh:mm:ss').fromNow();
-        }
-        const tincungchuyenmuc = await _postModel.tincungchuyenmuc(post.SCID);
-        await _postModel.upview(id);
-        res.render('_vwPosts/news', {
-            post,
-            comment,
-            tincungchuyenmuc,
-            empty: tincungchuyenmuc.length === 0
-        });
+
+    // Kiểm tra post có tồn tại không
+    if (!post) {
+        return res.status(404).send('Post not found');
     }
 
-}) 
+    // Kiểm tra điều kiện Premium an toàn hơn
+    if (post.Premium === 1 && (!req.isAuthenticated() || (req.user && req.user.Premium !== 1))) {
+        const premium = true;
+        return res.render('_vwPosts/news', { 
+            premium
+        });
+    } 
+
+    const ufullname = await userModel.singleByUserID(post.UID);
+    if (ufullname !== null) { 
+        post.U_FullName = ufullname.Fullname; 
+    }
+    post.Time = moment(post.TimePost, 'YYYY-MM-DD hh:mm:ss').format('hh:mmA DD/MM/YYYY');
+    
+    const comment = await commentModel.singleByPostID(id);
+    for (var i = 0; i < comment.length; i++) {
+        const u = await userModel.singleByUserID(comment[i].UID);
+        comment[i].username = u.UserName;
+        comment[i].Time = moment(comment[i].Date, 'YYYY-MM-DD hh:mm:ss').fromNow();
+    }
+    
+    const tincungchuyenmuc = await _postModel.tincungchuyenmuc(post.SCID);
+    await _postModel.upview(id);
+    
+    res.render('_vwPosts/news', {
+        post,
+        comment,
+        tincungchuyenmuc,
+        empty: tincungchuyenmuc.length === 0
+    });
+})
 
 router.post('/:id', async function (req, res) {
     const id = +req.params.id || -1;
