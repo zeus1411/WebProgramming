@@ -7,6 +7,12 @@ import hbs_sections from 'express-handlebars-sections';
 import bcrypt from 'bcryptjs';
 import moment from 'moment';
 import 'express-async-errors';
+import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
+// import './passport-setup.js';
+
+// Đặt Client ID và Secret từ Google Console
+const GOOGLE_CLIENT_ID = '1041136174971-jqsg5dtr01c0rr556b4q2lpifuk3n11u.apps.googleusercontent.com';
+const GOOGLE_CLIENT_SECRET = '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';
 
 const app = express();
 
@@ -25,7 +31,7 @@ app.engine('hbs', engine({
 app.set('view engine', 'hbs');
 app.set('trust proxy', 1) // trust first proxy
   app.use(session({
-    secret: 'keyboard cat',
+    secret: 'keyboard cat', 
     resave: false,
     saveUninitialized: true,
     cookie: {
@@ -76,7 +82,6 @@ app.use(async function(req, res, next) {
     res.locals.lcCategories = rows;
     next();
 })
-
 
 app.use(async function(req, res, next) {
     const post = await postModel.allPostSapPublic();
@@ -231,6 +236,9 @@ app.use('/editorpanel', editorPanelRouter);
 
 import userModel from './models/user.model.js';
 
+import authRouter from './routes/google.route.js';
+app.use('/', authRouter);
+
 app.route('/dangnhap')
 .get(function(req, res) {
     res.render('_vwAccount/dangnhap')
@@ -255,24 +263,72 @@ passport.use(new LocalStrategy(async function (username, password, done) {
 }))
 
 passport.serializeUser((user, done) => {
-    done(null, user.UserName)
-})
-
-passport.deserializeUser(async function (name, done) {
-    const user = await userModel.singleByUserName(name);
-    delete user.Password_hash;
-
-    if (user) {
-        return done(null, user);
+    // Kiểm tra nếu là user từ Google OAuth
+    if (user.emails) {
+        // Đây là user từ Google
+        done(null, user.emails[0].value); // Lưu email vào session
     } else {
-        return done(null, false)
+        // Đây là user từ database
+        done(null, user.UserName);
     }
 })
 
-app.get('/dangxuat', function (req, res) {
-    req.logout();
-    res.redirect(req.headers.referer);
-})
+passport.deserializeUser(async function (identifier, done) {
+    try {
+        // Thử tìm user bằng cả email và username
+        let user = await userModel.singleByEmail(identifier);
+        if (!user) {
+            user = await userModel.singleByUserName(identifier);
+        }
+
+        if (user) {
+            delete user.Password_hash;
+            return done(null, user);
+        } else {
+            return done(null, false);
+        }
+    } catch (error) {
+        return done(error, null);
+    }
+});
+
+passport.use(new GoogleStrategy({
+    clientID: "1041136174971-jqsg5dtr01c0rr556b4q2lpifuk3n11u.apps.googleusercontent.com",
+    clientSecret: "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",
+    callbackURL: "http://localhost:3000/auth/google/callback"
+  },
+  async function(accessToken, refreshToken, profile, done) {
+    try {
+      // Kiểm tra xem user đã tồn tại trong DB chưa
+      let user = await userModel.singleByEmail(profile.id);
+      
+      if (!user) {
+        // Nếu chưa có, tạo user mới
+        const newUser = {
+          GoogleID: profile.id,
+          Email: profile.emails[0].value,
+          UserName: profile.displayName,
+        };
+        
+        await userModel.add(newUser);
+        user = newUser;
+      }
+      
+      return done(null, user);
+    } catch (error) {
+      return done(error, null);
+    }
+  }
+));
+
+app.get('/dangxuat', function (req, res, next) {
+    req.logout(function (err) {
+        if (err) {
+            return next(err); // Xử lý lỗi nếu xảy ra
+        }
+        res.redirect(req.headers.referer || '/'); // Chuyển hướng sau khi đăng xuất, hoặc về trang chủ nếu không có referer
+    });
+});
 
 app.use(function (req, res) {
     res.render('404', { layout: false });
