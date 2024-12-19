@@ -6,6 +6,7 @@ import { Strategy as LocalStrategy } from 'passport-local';
 import hbs_sections from 'express-handlebars-sections';
 import bcrypt from 'bcryptjs';
 import moment from 'moment';
+import nodemailer from 'nodemailer';
 import 'express-async-errors';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 // import './passport-setup.js';
@@ -238,6 +239,34 @@ import userModel from './models/user.model.js';
 
 import authRouter from './routes/google.route.js';
 app.use('/', authRouter);
+
+import forget from './routes/auth.route.js';
+app.use('/auth', forget);
+
+// Tạo middleware để truyền transporter vào req
+const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+      port: 587,
+      secure: false,
+    auth: {
+        user: 'zeusgaming1411@gmail.com', // Email của bạn
+        pass: 'avuobudnekoiznjf', // Mật khẩu email của bạn
+    }
+  });
+  
+  // Kiểm tra kết nối email
+  transporter.verify(function(error, success) {
+    if (error) {
+      console.log('Lỗi kết nối email:', error);
+    } else {
+      console.log('Server email sẵn sàng');
+    }
+  });
+  
+  app.use((req, res, next) => {
+    req.transporter = transporter;
+    next();
+  });
 
 app.route('/dangnhap')
 .get(function(req, res) {
