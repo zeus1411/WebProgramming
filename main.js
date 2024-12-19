@@ -299,21 +299,27 @@ passport.use(new GoogleStrategy({
   },
   async function(accessToken, refreshToken, profile, done) {
     try {
-      // Kiểm tra xem user đã tồn tại trong DB chưa
-      let user = await userModel.singleByEmail(profile.id);
+      // Kiểm tra xem user đã tồn tại trong DB chưa (dựa vào Email hoặc GoogleID)
+      let user = await userModel.singleByGoogleId(profile.id);
       
       if (!user) {
-        // Nếu chưa có, tạo user mới
-        const newUser = {
-          GoogleID: profile.id,
-          Email: profile.emails[0].value,
-          UserName: profile.displayName,
-        };
+        // Nếu chưa có user, kiểm tra bằng email (trong trường hợp người dùng đã đăng ký với email khác trước đó)
+        user = await userModel.singleByEmail(profile.emails[0].value);
         
-        await userModel.add(newUser);
-        user = newUser;
+        if (!user) {
+          // Nếu không có user nào, tạo user mới
+          const newUser = {
+            GoogleID: profile.id,
+            Email: profile.emails[0].value,
+            UserName: profile.displayName,
+          };
+          
+          await userModel.add(newUser);
+          user = newUser;
+        }
       }
-      
+
+      // Trả về user sau khi đã đăng nhập hoặc tạo mới thành công
       return done(null, user);
     } catch (error) {
       return done(error, null);
