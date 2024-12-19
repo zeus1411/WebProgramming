@@ -15,6 +15,10 @@ export default {
     singleByUserName: function (username) {
       return db('users').where({ username }).first();
     },
+
+    singleByGoogleId: function (googleId) {
+      return db('users').where({ GoogleID: googleId }).first();
+    },
   
     // Lấy người dùng theo email
     singleByEmail: function (email) {
