@@ -65,9 +65,12 @@ export default {
   },
 
   // Lấy bài viết theo UID
-  singleByUserID: function (id) {
-    return db('posts').where('UID', id).first();
-  },
+  singleByUserID: function (userID) {
+    return db('posts')
+        .where('UID', userID)
+        .orderBy('TimePost', 'desc')
+        .select('*');
+},
 
   // Cập nhật bài viết
   patch: function (entity) {
