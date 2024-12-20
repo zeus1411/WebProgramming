@@ -66,9 +66,10 @@ export default {
   },
 
   // Lấy bài viết theo UID
-  singleByUserID: async function (id) {
-    return await db('posts').where('UID', id);
-  },
+
+  singleByUserID: async (userID) => {
+    return await db('posts').where('UID', userID).orderBy('TimePost', 'desc').first();
+},
 
   // Cập nhật bài viết
   patch: async function (entity) {

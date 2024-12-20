@@ -10,7 +10,11 @@ export default {
       throw new Error('Lỗi khi lấy tất cả danh mục con');
     }
   },
-
+  single: async function (id) {
+    const result = await db('subcategories').where({ CID: id });
+    return result.length > 0 ? result : []; // Trả về mảng trống nếu không có kết quả
+  },
+  
   // Lấy danh mục con theo CID
   getSingleByCID: async function (id) {
     try {
