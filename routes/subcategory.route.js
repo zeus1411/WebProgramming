@@ -63,7 +63,7 @@ router.post('/:id/add', async function (req, res) {
 router.get('/edit/:id', async function (req, res) {
     if (req.isAuthenticated() && req.user.Permission === 3) {
         const id = +req.params.id || -1;
-        const rows = await subcategoryModel.single2(id);
+        const rows = await subcategoryModel.getSingleBySCID(id);
         if (rows.length === 0)
         return res.send('Invalid parameter.');
     
@@ -87,7 +87,7 @@ router.post('/update', async function (req, res) {
 router.post('/del/:id', async function(req, res) {
     if (req.isAuthenticated() && req.user.Permission === 3) {
         const scid = req.body.SCID;
-        const subcatory = await subcategoryModel.single2(scid);
+        const subcatory = await subcategoryModel.getSingleBySCID(scid);
         const cid = subcatory[0].CID;
         await subcategoryModel.del(req.body.SCID);
 
@@ -100,7 +100,7 @@ router.post('/del/:id', async function(req, res) {
 router.get('/del/:id', async function(req, res) {
     if (req.isAuthenticated() && req.user.Permission === 3) {
         const id = +req.params.id || -1;
-        const rows = await subcategoryModel.single2(id);
+        const rows = await subcategoryModel.getSingleBySCID(id);
         if(rows.length === 0) 
             res.send('Invaild parameter.');
         const cid = rows[0].CID;
@@ -115,7 +115,7 @@ router.get('/del/:id', async function(req, res) {
 router.post('/restore/:id', async function(req, res) {
     if (req.isAuthenticated() && req.user.Permission === 3) {
         const scid = req.body.SCID;
-        const subcatory = await subcategoryModel.single2(scid);
+        const subcatory = await subcategoryModel.getSingleBySCID(scid);
         const cid = subcatory[0].CID;
         await subcategoryModel.restore(req.body.SCID);
 
@@ -128,7 +128,7 @@ router.post('/restore/:id', async function(req, res) {
 router.get('/restore/:id', async function(req, res) {
     if (req.isAuthenticated() && req.user.Permission === 3) {
         const id = +req.params.id || -1;
-        const rows = await subcategoryModel.single2(id);
+        const rows = await subcategoryModel.getSingleBySCID(id);
         if(rows.length === 0) 
             res.send('Invaild parameter.');
         const cid = rows[0].CID;
@@ -143,7 +143,7 @@ router.get('/restore/:id', async function(req, res) {
 router.get('/delete/:id', async function (req, res) {
     if (req.isAuthenticated() && req.user.Permission === 3) {
         const id = +req.params.id || -1;
-        const cid = await subcategoryModel.single2(id);
+        const cid = await subcategoryModel.getSingleBySCID(id);
         await subcategoryModel.del2(id);
         res.redirect('/admin/subcategories/'+cid[0].CID);
     } else {

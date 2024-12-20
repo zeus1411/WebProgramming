@@ -2,49 +2,93 @@ import db from '../utils/db.js';
 
 export default {
   // Lấy tất cả các danh mục con
-  all: function () {
-    return db('subcategories'); // Truy vấn trực tiếp bảng 'subcategories'
+  getAll: async function () {
+    try {
+      const subcategories = await db('subcategories');
+      return subcategories;
+    } catch (error) {
+      throw new Error('Lỗi khi lấy tất cả danh mục con');
+    }
   },
 
   // Lấy danh mục con theo CID
-  single: function (id) {
-    return db('subcategories').where('CID', id);
+  getSingleByCID: async function (id) {
+    try {
+      const subcategory = await db('subcategories').where('CID', id);
+      return subcategory;
+    } catch (error) {
+      throw new Error('Lỗi khi lấy danh mục con theo CID');
+    }
   },
 
   // Lấy danh mục con chưa bị xóa theo CID
-  singleforuser: function (id) {
-    return db('subcategories').where('CID', id).andWhere('Del', 0);
+  getSingleForUserByCID: async function (id) {
+    try {
+      const subcategory = await db('subcategories').where('CID', id).andWhere('Del', 0);
+      return subcategory;
+    } catch (error) {
+      throw new Error('Lỗi khi lấy danh mục con chưa bị xóa theo CID');
+    }
   },
 
   // Lấy danh mục con theo SCID
-  single2: function (id) {
-    return db('subcategories').where('SCID', id).first();
+  getSingleBySCID: async function (id) {
+    try {
+      const subcategory = await db('subcategories').where('SCID', id).first();
+      return subcategory;
+    } catch (error) {
+      throw new Error('Lỗi khi lấy danh mục con theo SCID');
+    }
   },
 
   // Thêm danh mục con mới
-  add: function (entity) {
-    return db('subcategories').insert(entity);
+  add: async function (entity) {
+    try {
+      const result = await db('subcategories').insert(entity);
+      return result;
+    } catch (error) {
+      throw new Error('Lỗi khi thêm danh mục con mới');
+    }
   },
 
   // Cập nhật danh mục con
-  patch: function (entity) {
-    const { SCID, ...updateData } = entity; // Tách SCID khỏi dữ liệu cập nhật
-    return db('subcategories').where('SCID', SCID).update(updateData);
+  patch: async function (entity) {
+    try {
+      const { SCID, ...updateData } = entity;
+      const result = await db('subcategories').where('SCID', SCID).update(updateData);
+      return result;
+    } catch (error) {
+      throw new Error('Lỗi khi cập nhật danh mục con');
+    }
   },
 
   // Đánh dấu danh mục con là đã xóa
-  del: function (id) {
-    return db('subcategories').where('SCID', id).update({ Del: 1 });
+  softDelete: async function (id) {
+    try {
+      const result = await db('subcategories').where('SCID', id).update({ Del: 1 });
+      return result;
+    } catch (error) {
+      throw new Error('Lỗi khi đánh dấu danh mục con là đã xóa');
+    }
   },
 
   // Khôi phục danh mục con đã xóa
-  restore: function (id) {
-    return db('subcategories').where('SCID', id).update({ Del: 0 });
+  restore: async function (id) {
+    try {
+      const result = await db('subcategories').where('SCID', id).update({ Del: 0 });
+      return result;
+    } catch (error) {
+      throw new Error('Lỗi khi khôi phục danh mục con đã xóa');
+    }
   },
 
   // Xóa danh mục con vĩnh viễn
-  del2: function (id) {
-    return db('subcategories').where('SCID', id).del();
+  hardDelete: async function (id) {
+    try {
+      const result = await db('subcategories').where('SCID', id).del();
+      return result;
+    } catch (error) {
+      throw new Error('Lỗi khi xóa danh mục con vĩnh viễn');
+    }
   }
 };
-

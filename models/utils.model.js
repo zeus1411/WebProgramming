@@ -1,30 +1,50 @@
-
 import db from '../utils/db.js';
-
-
+/**
+ * Category Manager Model
+ */
 export default {
-    // Lấy thông tin quản lý danh mục theo UserID
-    showCategoryManagerByUID: function (id) {
-        return db('categorymanager').where({ UserID: id });
-    },
+  /**
+   * Get category manager by UserID
+   * @param {number} id - UserID
+   * @returns {Promise} Category manager data
+   */
+  showCategoryManagerByUID: async function (id) {
+    return await db('categorymanager').where({ UserID: id });
+  },
 
-    // Lấy CID từ quản lý danh mục theo UserID
-    showCIDCategoryManagerByUID: function (id) {
-        return db('categorymanager').where({ UserID: id }).select('CID');
-    },
+  /**
+   * Get CID from category manager by UserID
+   * @param {number} id - UserID
+   * @returns {Promise} CID data
+   */
+  showCIDCategoryManagerByUID: async function (id) {
+    return await db('categorymanager').where({ UserID: id }).select('CID');
+  },
 
-    // Thêm quản lý danh mục mới
-    setCategoryManager: function (entity) {
-        return db('categorymanager').insert(entity);
-    },
+  /**
+   * Add new category manager
+   * @param {object} entity - Category manager data
+   * @returns {Promise} Insert result
+   */
+  setCategoryManager: async function (entity) {
+    return await db('categorymanager').insert(entity);
+  },
 
-    // Xóa quản lý danh mục theo UserID
-    delCategoryManagerByUserID: function (id) {
-        return db('categorymanager').where({ UserID: id }).del();
-    },
+  /**
+   * Delete category manager by UserID
+   * @param {number} id - UserID
+   * @returns {Promise} Delete result
+   */
+  delCategoryManagerByUserID: async function (id) {
+    return await db('categorymanager').where({ UserID: id }).del();
+  },
 
-    // Xóa quản lý danh mục theo CID
-    delCategoryManagerByCID: function (id) {
-        return db('categorymanager').where({ CID: id }).del();
-    }
+  /**
+   * Delete category manager by CID
+   * @param {number} id - CID
+   * @returns {Promise} Delete result
+   */
+  delCategoryManagerByCID: async function (id) {
+    return await db('categorymanager').where({ CID: id }).del();
+  }
 };

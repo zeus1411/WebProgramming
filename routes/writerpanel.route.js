@@ -13,7 +13,7 @@ const { compareSync } = cpS;
 
 router.get('/', async function (req, res) {
     if (req.isAuthenticated() && req.user.Permission === 1) {
-        const category = await categoryModel.allforuser();
+        const category = await categoryModel.allForUser();
         const post_by_UID = await postModel.singleByUserID(req.user.UserID);
         const post_ChuaDuyet = await postModel.singleByUserIDStatus(req.user.UserID, 0);
         const post_TuChoi = await postModel.singleByUserIDStatus(req.user.UserID, 1);
@@ -54,9 +54,9 @@ router.get('/', async function (req, res) {
 
 router.get('/post', async function (req, res) {
     if (req.isAuthenticated() && req.user.Permission === 1) {
-        const category = await categoryModel.allforuser();
-        for (let i = 0; i < category.length; i++) {
-            const subcategory = await subcategoryModel.singleforuser(category[i].CID);
+        const category = await categoryModel.allForUser();
+        for (var i = 0; i < category.length; i++) {
+            const subcategory = await subcategoryModel.getSingleForUserByCID(category[i].CID)
             category[i].Subcategory = subcategory;
         }
         res.render('vwPosts/post', {
@@ -68,12 +68,15 @@ router.get('/post', async function (req, res) {
 });
 
 router.post('/post', async function (req, res) {
-    try {
-        const subcategory = await subcategoryModel.single2(req.body.SCID);
-        req.body.CID = subcategory[0]?.CID;
-        const now = new Date();
-        req.body.TimePost = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()} ${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
-        req.body.UID = req.user.UserID;
+    const subcategory = await subcategoryModel.getSingleBySCID(req.body.SCID);
+    req.body.CID = subcategory[0].CID;
+    var today = new Date();
+    var time = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate()+' '+today.getHours()+':'+today.getMinutes()+':'+today.getSeconds();
+    req.body.TimePost = time;
+    req.body.UID = req.user.UserID;
+    await postModel.add(req.body);
+    res.redirect('/writerpanel');
+})
 
         await postModel.add(req.body);
         res.redirect('/writerpanel');
