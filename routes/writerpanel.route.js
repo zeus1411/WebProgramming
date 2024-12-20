@@ -60,12 +60,12 @@ router.get('/post', async function (req, res) {
             category[i].Subcategory = subcategory;
         }
         res.render('vwPosts/post', {
-            category        
-        })
+            category
+        });
     } else {
         res.redirect('/');
     }
-})
+});
 
 router.post('/post', async function (req, res) {
     const subcategory = await subcategoryModel.getSingleBySCID(req.body.SCID);
@@ -78,6 +78,13 @@ router.post('/post', async function (req, res) {
     res.redirect('/writerpanel');
 })
 
+        await postModel.add(req.body);
+        res.redirect('/writerpanel');
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Internal Server Error');
+    }
+});
 
 
 
