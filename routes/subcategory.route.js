@@ -7,24 +7,33 @@ const router = express.Router();
 router.get('/:id', async function (req, res) {
     if (req.isAuthenticated() && req.user.Permission === 3) {
         const id = +req.params.id || -1;
-        const list = await subcategoryModel.single(id);
-        for (var i = 0; i < list.length; i++) {
-            if (list[i].Del == 1) {
-                list[i].Xoa = true;
-            } else {
-                list[i].Xoa = false;
+        let list = await subcategoryModel.single(id);
+        
+        if (list && list.length > 0) {
+            for (var i = 0; i < list.length; i++) {
+                if (list[i].Del == 1) {
+                    list[i].Xoa = true;
+                } else {
+                    list[i].Xoa = false;
+                }
             }
+        } else {
+            list = [];
         }
+
         const rows = await categoryModel.single(id);
         if (rows.length === 0)
             return res.send('Invalid parameter.');
         const category = rows[0];
 
+        // Kiểm tra xem có bất kỳ phần tử nào có Del = 1 không
+        const hasDeletedItems = list.some(item => item.Del === 1);
+
         res.render('vwSubCate/list', {
             categories: list,
             category,
-            xoa: list.Xoa === 1,
-            empty: list.length === 0
+            xoa: hasDeletedItems,  // Thay vì dùng list.Xoa
+            empty: !list || list.length === 0
         });
     } else {
         res.redirect('/')
