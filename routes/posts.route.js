@@ -10,13 +10,13 @@ moment.locale('vi');
 
 router.get('/', async function (req, res) {
     if (req.isAuthenticated() && req.user.Permission === 3) {
-        const cate = await categoryModel.allforuser();
+        const cate = await categoryModel.allForUser();
         const post = await postModel.all();
         for (var i = 0; i < post.length; i++) {
             post[i].Time = moment(post[i].TimePost, 'YYYY-MM-DD hh:mm:ss').format('hh:mmA DD/MM/YYYY');
             const cat_post = await categoryModel.single(post[i].CID);
             post[i].CName = cat_post[0].CName;
-            const subcat_post = await subcategoryModel.single2(post[i].SCID);
+            const subcat_post = await subcategoryModel.getSingleForUserByCID(post[i].SCID);
             if (post[i].SCID !== null) { post[i].SCName = ' / '+subcat_post[0].SCName; }
             const uid_post = await userModel.singleByUserID(post[i].UID);
             post[i].UserName = uid_post.UserName;
@@ -28,7 +28,7 @@ router.get('/', async function (req, res) {
             post_ChuaDuyet[i].Time = moment(post_ChuaDuyet[i].TimePost, 'YYYY-MM-DD hh:mm:ss').format('hh:mmA DD/MM/YYYY');
             const cat_post = await categoryModel.single(post_ChuaDuyet[i].CID);
             post_ChuaDuyet[i].CName = cat_post[0].CName;
-            const subcat_post = await subcategoryModel.single2(post_ChuaDuyet[i].SCID);
+            const subcat_post = await subcategoryModel.getSingleForUserByCID(post_ChuaDuyet[i].SCID);
             if (post_ChuaDuyet[i].SCID !== null) { post_ChuaDuyet[i].SCName = ' / '+subcat_post[0].SCName; }
             const uid_post = await userModel.singleByUserID(post_ChuaDuyet[i].UID);
             post_ChuaDuyet[i].UserName = uid_post.UserName;
@@ -41,7 +41,7 @@ router.get('/', async function (req, res) {
             post_TuChoi[i].Time = moment(post_TuChoi[i].TimePost, 'YYYY-MM-DD hh:mm:ss').format('hh:mmA DD/MM/YYYY');
             const cat_post = await categoryModel.single(post_TuChoi[i].CID);
             post_TuChoi[i].CName = cat_post[0].CName;
-            const subcat_post = await subcategoryModel.single2(post_TuChoi[i].SCID);
+            const subcat_post = await subcategoryModel.getSingleForUserByCID(post_TuChoi[i].SCID);
             if (post_TuChoi[i].SCID !== null) { post_TuChoi[i].SCName = ' / '+subcat_post[0].SCName; }
             const uid_post = await userModel.singleByUserID(post_TuChoi[i].UID);
             post_TuChoi[i].UserName = uid_post.UserName;
@@ -53,7 +53,7 @@ router.get('/', async function (req, res) {
             post_ChoXuatBan[i].Time = moment(post_ChoXuatBan[i].TimePost, 'YYYY-MM-DD hh:mm:ss').format('hh:mmA DD/MM/YYYY');
             const cat_post = await categoryModel.single(post_ChoXuatBan[i].CID);
             post_ChoXuatBan[i].CName = cat_post[0].CName;
-            const subcat_post = await subcategoryModel.single2(post_ChoXuatBan[i].SCID);
+            const subcat_post = await subcategoryModel.getSingleForUserByCID(post_ChoXuatBan[i].SCID);
             if (post_ChoXuatBan[i].SCID !== null) { post_ChoXuatBan[i].SCName = ' / '+subcat_post[0].SCName; }
             const uid_post = await userModel.singleByUserID(post_ChoXuatBan[i].UID);
             post_ChoXuatBan[i].UserName = uid_post.UserName;
@@ -65,7 +65,7 @@ router.get('/', async function (req, res) {
             post_XuatBan[i].Time = moment(post_XuatBan[i].TimePost, 'YYYY-MM-DD hh:mm:ss').format('hh:mmA DD/MM/YYYY');
             const cat_post = await categoryModel.single(post_XuatBan[i].CID);
             post_XuatBan[i].CName = cat_post[0].CName;
-            const subcat_post = await subcategoryModel.single2(post_XuatBan[i].SCID);
+            const subcat_post = await subcategoryModel.getSingleForUserByCID(post_XuatBan[i].SCID);
             if (post_XuatBan[i].SCID !== null) { post_XuatBan[i].SCName = ' / '+subcat_post[0].SCName; }
             const uid_post = await userModel.singleByUserID(post_XuatBan[i].UID);
             post_XuatBan[i].UserName = uid_post.UserName;
@@ -92,11 +92,11 @@ router.get('/status/:pid', async function(req, res) {
         const pid = +req.params.pid || -1;
         const pst = await postModel.singleByPostID(pid);
         const cate_post = await categoryModel.singleByCID(pst[0].CID);
-        const subcate_post = await subcategoryModel.single2(pst[0].SCID);
+        const subcate_post = await subcategoryModel.getSingleForUserByCID(pst[0].SCID);
         const sub_post = subcate_post[0];
-        const category = await categoryModel.allforuser();
+        const category = await categoryModel.allForUser();
         for (var i = 0; i < category.length; i++) {
-            const row = await subcategoryModel.singleforuser(category[i].CID);
+            const row = await subcategoryModel.getSingleForUserByCID(category[i].CID);
             category[i].subcategories = row;
             category[i].PID = pid;
             for (var j = 0; j < category[i].subcategories.length; j++) {
@@ -139,11 +139,11 @@ router.get('/move/:pid', async function(req, res) {
         const pid = +req.params.pid || -1;
         const pst = await postModel.singleByPostID(pid);
         const cate_post = await categoryModel.singleByCID(pst[0].CID);
-        const subcate_post = await subcategoryModel.single2(pst[0].SCID);
+        const subcate_post = await subcategoryModel.getSingleForUserByCID(pst[0].SCID);
         const sub_post = subcate_post[0];
-        const category = await categoryModel.allforuser();
+        const category = await categoryModel.allForUser();
         for (var i = 0; i < category.length; i++) {
-            const row = await subcategoryModel.singleforuser(category[i].CID);
+            const row = await subcategoryModel.getSingleForUserByCID(category[i].CID);
             category[i].subcategories = row;
             category[i].PID = pid;
             for (var j = 0; j < category[i].subcategories.length; j++) {
@@ -241,7 +241,7 @@ router.get('/edit/:id', async function (req, res) {
     const post = rows[0];
     if (req.isAuthenticated() && ((req.user.Permission ===1 && (post.Duyet === 0 || post.Duyet ===1)) || req.user.Permission === 3)) {
         const category = await categoryModel.singleByCID(post.CID);
-        const sub = await subcategoryModel.single2(post.SCID);
+        const sub = await subcategoryModel.getSingleForUserByCID(post.SCID);
         const subcategory = sub[0];
         post.CName = category.CName;
         post.SCName = subcategory.SCName;

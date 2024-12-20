@@ -13,7 +13,7 @@ const { compareSync } = cpS;
 
 router.get('/', async function (req, res) {
     if (req.isAuthenticated() && req.user.Permission === 1) {
-        const category = await categoryModel.allforuser();
+        const category = await categoryModel.allForUser();
         const post_by_UID = await postModel.singleByUserID(req.user.UserID);
         const post_ChuaDuyet = await postModel.singleByUserIDStatus(req.user.UserID, 0);
         const post_TuChoi = await postModel.singleByUserIDStatus(req.user.UserID, 1);
@@ -23,7 +23,7 @@ router.get('/', async function (req, res) {
             post_by_UID[i].Time = moment(post_by_UID[i].TimePost, 'YYYY-MM-DD hh:mm:ss').fromNow();
             const cat_post = await categoryModel.single(post_by_UID[i].CID);
             post_by_UID[i].CName = cat_post[0].CName;
-            const subcat_post = await subcategoryModel.single2(post_by_UID[i].SCID);
+            const subcat_post = await subcategoryModel.getSingleBySCID(post_by_UID[i].SCID);
             if (post_by_UID[i].SCID !== null) {
                 post_by_UID[i].SCName = ' / '+subcat_post[0].SCName;
             }
@@ -45,9 +45,9 @@ router.get('/', async function (req, res) {
 
 router.get('/post', async function (req, res) {
     if (req.isAuthenticated() && req.user.Permission === 1) {
-        const category = await categoryModel.allforuser();
+        const category = await categoryModel.allForUser();
         for (var i = 0; i < category.length; i++) {
-            const subcategory = await subcategoryModel.singleforuser(category[i].CID)
+            const subcategory = await subcategoryModel.getSingleForUserByCID(category[i].CID)
             category[i].Subcategory = subcategory;
         }
         res.render('vwPosts/post', {
@@ -59,7 +59,7 @@ router.get('/post', async function (req, res) {
 })
 
 router.post('/post', async function (req, res) {
-    const subcategory = await subcategoryModel.single2(req.body.SCID);
+    const subcategory = await subcategoryModel.getSingleBySCID(req.body.SCID);
     req.body.CID = subcategory[0].CID;
     var today = new Date();
     var time = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate()+' '+today.getHours()+':'+today.getMinutes()+':'+today.getSeconds();

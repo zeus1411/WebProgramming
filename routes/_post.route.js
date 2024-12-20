@@ -20,7 +20,7 @@ router.get('/new', async function (req, res) {
         const cat_post = await categoryModel.singleByCID(post[i].CID);
         post[i].CName = cat_post.CName;
 
-        const subcat_post = await subcategoryModel.single2(post[i].SCID);
+        const subcat_post = await subcategoryModel.getSingleForUserByCID(post[i].SCID);
 
         // Kiểm tra subcat_post tồn tại và có ít nhất một phần tử
         if (post[i].SCID !== null && subcat_post && subcat_post.length > 0) {
@@ -46,7 +46,7 @@ router.get('/hot', async function (req, res) {
         const cat_post = await categoryModel.singleByCID(post[i].CID);
         post[i].CName = cat_post.CName;
 
-        const subcat_post = await subcategoryModel.single2(post[i].SCID);
+        const subcat_post = await subcategoryModel.getSingleForUserByCID(post[i].SCID);
 
         if (post[i].Premium === 1) { 
             post[i].Pre = true;
