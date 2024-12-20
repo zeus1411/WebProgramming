@@ -72,7 +72,7 @@ router.get('/', async function (req, res) {
             if (post_XuatBan[i].xoa === 1) { post_XuatBan[i].Delete = true; } 
             if (post_XuatBan[i].Premium === 1) { post_XuatBan[i].Pre = true; } 
         }
-
+        console.log(post_TuChoi)
         res.render('vwPosts/home', {
             post,
             list: cate,

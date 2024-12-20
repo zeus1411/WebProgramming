@@ -55,29 +55,33 @@ router.get('/', async function (req, res) {
 router.get('/post', async function (req, res) {
     if (req.isAuthenticated() && req.user.Permission === 1) {
         const category = await categoryModel.allforuser();
-        for (var i = 0; i < category.length; i++) {
-            const subcategory = await subcategoryModel.singleforuser(category[i].CID)
+        for (let i = 0; i < category.length; i++) {
+            const subcategory = await subcategoryModel.singleforuser(category[i].CID);
             category[i].Subcategory = subcategory;
         }
         res.render('vwPosts/post', {
-            category        
-        })
+            category
+        });
     } else {
         res.redirect('/');
     }
-})
+});
 
 router.post('/post', async function (req, res) {
-    const subcategory = await subcategoryModel.single2(req.body.SCID);
-    req.body.CID = subcategory[0].CID;
-    var today = new Date();
-    var time = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate()+' '+today.getHours()+':'+today.getMinutes()+':'+today.getSeconds();
-    req.body.TimePost = time;
-    req.body.UID = req.user.UserID;
-    await postModel.add(req.body);
-    res.redirect('/writerpanel');
-})
+    try {
+        const subcategory = await subcategoryModel.single2(req.body.SCID);
+        req.body.CID = subcategory[0]?.CID;
+        const now = new Date();
+        req.body.TimePost = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()} ${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
+        req.body.UID = req.user.UserID;
 
+        await postModel.add(req.body);
+        res.redirect('/writerpanel');
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Internal Server Error');
+    }
+});
 
 
 
