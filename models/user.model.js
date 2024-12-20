@@ -3,46 +3,46 @@ import bcrypt from 'bcrypt';
 
 const users = {
   // Lấy tất cả người dùng
-  async all() {
+  all: async function () {
     return await db('users');
   },
 
   // Thêm người dùng mới
-  async add(entity) {
+  add: async function (entity) {
     return await db('users').insert(entity);
   },
 
   // Lấy người dùng theo username
-  async singleByUserName(username) {
+  singleByUserName: async function (username) {
     return await db('users').where({ username }).first();
   },
 
-  async singleByGoogleId(googleId) {
+  singleByGoogleId: async function (googleId) {
     return await db('users').where({ GoogleID: googleId }).first();
   },
 
   // Lấy người dùng theo email
-  async singleByEmail(email) {
+  singleByEmail: async function (email) {
     return await db('users').where({ Email: email }).first();
   },
 
   // Lấy người dùng theo số điện thoại
-  async singleByPhone(phone) {
+  singleByPhone: async function (phone) {
     return await db('users').where({ Phone: phone }).first();
   },
 
   // Lấy người dùng theo UserID
-  async singleByUserID(id) {
-    return await db('users').where({ UserID: id }).first();
+  singleByUserID: async function (userId) {
+    return await db('users').where({ UserID: userId }).first();
   },
 
-  // Lấy người dùng theo username (không dùng async)
-  async single(username) {
+  // Lấy người dùng theo username (không dùng : async function)
+  single: async function (username) {
     return await db('users').where({ username }).first();
   },
 
   // Cập nhật reset token cho người dùng
-  async updateResetToken(userID, token, expiry) {
+  updateResetToken: async function (userID, token, expiry) {
     return await db('users').where({ UserID: userID }).update({
       resetToken: token,
       resetTokenExpiry: expiry,
@@ -50,12 +50,12 @@ const users = {
   },
 
   // Tìm người dùng theo reset token
-  async findByResetToken(token) {
+  findByResetToken: async function (token) {
     return await db('users').where({ resetToken: token }).first();
   },
 
   // Cập nhật mật khẩu mới cho người dùng
-  async updatePassword(userID, newPassword) {
+  updatePassword: async function (userID, newPassword) {
     const hash = await bcrypt.hash(newPassword, 10);
     return await db('users').where({ UserID: userID }).update({
       Password_hash: hash,
@@ -63,7 +63,7 @@ const users = {
   },
 
   // Xóa reset token của người dùng
-  async clearResetToken(userID) {
+  clearResetToken: async function (userID) {
     return await db('users').where({ UserID: userID }).update({
       resetToken: null,
       resetTokenExpiry: null,
@@ -71,23 +71,23 @@ const users = {
   },
 
   // Cập nhật thông tin người dùng
-  async patch(entity) {
+  patch: async function (entity) {
     const { UserID, ...updatedData } = entity; // Tách UserID ra khỏi đối tượng
     return await db('users').where({ UserID }).update(updatedData);
   },
 
   // Xóa người dùng (đánh dấu xóa)
-  async del(id) {
+  del: async function (id) {
     return await db('users').where({ UserID: id }).update({ Del: 1 });
   },
 
   // Khôi phục người dùng
-  async restore(id) {
+  restore: async function (id) {
     return await db('users').where({ UserID: id }).update({ Del: 0 });
   },
 
   // Xóa người dùng vĩnh viễn
-  async del2(id) {
+  del2: async function (id) {
     return await db('users').where({ UserID: id }).del();
   }
 };

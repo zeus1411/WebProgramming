@@ -236,25 +236,29 @@ router.get('/:id', async function (req, res) {
 })
 
 router.get('/edit/:id', async function (req, res) {
-    const id = +req.params.id || -1;
-    const rows = await postModel.singleByPostID(id);
-    const post = rows[0];
-    if (req.isAuthenticated() && ((req.user.Permission ===1 && (post.Duyet === 0 || post.Duyet ===1)) || req.user.Permission === 3)) {
-        const category = await categoryModel.singleByCID(post.CID);
-        const sub = await subcategoryModel.getSingleForUserByCID(post.SCID);
-        const subcategory = sub[0];
-        post.CName = category.CName;
-        post.SCName = subcategory.SCName;
+    const id = +req.params.id;
+    const post = await postModel.singleByPostID(id);
 
-        res.render('vwPosts/edit', {
-            post,
-            Premium: post.Premium === 1,
-            qAdmin: req.user.Permission === 3
-        });
-    } else {
-        res.redirect('/')
+    if (!post || !post.length) {
+        return res.redirect('/');
     }
-})
+
+    const postInfo = post[0];
+
+    if (!req.isAuthenticated() || !(req.user.Permission === 1 && (postInfo.Duyet === 0 || postInfo.Duyet === 1)) && req.user.Permission !== 3) {
+            const category = await categoryModel.singleByCID(postInfo.CID);
+            const subcategory = await subcategoryModel.getSingleForUserByCID(postInfo.SCID);
+        
+            postInfo.SCName = subcategory && subcategory.length ? subcategory[0].SCName : '';
+            postInfo.CName = category.CName;
+    }
+
+    res.render('vwPosts/edit', {
+        post: postInfo,
+        Premium: postInfo.Premium === 1,
+        qAdmin: req.user.Permission === 3
+    });
+});
 
 router.post('/update', async function (req, res) {
     const id = req.body.PostID;
