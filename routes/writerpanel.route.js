@@ -68,15 +68,12 @@ router.get('/post', async function (req, res) {
 });
 
 router.post('/post', async function (req, res) {
-    const subcategory = await subcategoryModel.getSingleBySCID(req.body.SCID);
-    req.body.CID = subcategory[0].CID;
-    var today = new Date();
-    var time = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate()+' '+today.getHours()+':'+today.getMinutes()+':'+today.getSeconds();
-    req.body.TimePost = time;
-    req.body.UID = req.user.UserID;
-    await postModel.add(req.body);
-    res.redirect('/writerpanel');
-})
+    try {
+        const subcategory = await subcategoryModel.single2(req.body.SCID);
+        req.body.CID = subcategory[0]?.CID;
+        const now = new Date();
+        req.body.TimePost = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()} ${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
+        req.body.UID = req.user.UserID;
 
         await postModel.add(req.body);
         res.redirect('/writerpanel');
@@ -85,7 +82,6 @@ router.post('/post', async function (req, res) {
         res.status(500).send('Internal Server Error');
     }
 });
-
 
 
 export default router;
