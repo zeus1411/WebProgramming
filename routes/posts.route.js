@@ -71,6 +71,7 @@ router.get('/', async function (req, res) {
         });
     } else {
         res.redirect('/');
+        res.redirect('/');
     }
 });
 router.get('/status/:pid', async function(req, res) {
@@ -123,31 +124,50 @@ router.post('/status/:id', async function (req, res) {
 router.get('/move/:pid', async function(req, res) {
     if (req.isAuthenticated() && req.user.Permission > 1) {
         const pid = +req.params.pid || -1;
+
+        // Lấy bài viết
         const pst = await postModel.singleByPostID(pid);
-        const cate_post = await categoryModel.singleByCID(pst[0].CID);
-        const subcate_post = await subcategoryModel.getSingleForUserByCID(pst[0].SCID);
+
+        // Kiểm tra nếu bài viết không tồn tại
+        if (!pst) {
+            return res.status(404).send('Post not found');
+        }
+
+        // Lấy danh mục bài viết
+        const cate_post = await categoryModel.singleByCID(pst.CID);
+        if (!cate_post) {
+            return res.status(404).send('Category not found for the post');
+        }
+
+        // Lấy danh mục con bài viết
+        const subcate_post = await subcategoryModel.getSingleForUserByCID(pst.SCID);
+        if (!subcate_post || subcate_post.length === 0) {
+            return res.status(404).send('Subcategory not found for the post');
+        }
+
         const sub_post = subcate_post[0];
+
+        // Lấy tất cả danh mục và danh mục con
         const category = await categoryModel.allForUser();
-        for (var i = 0; i < category.length; i++) {
+        for (let i = 0; i < category.length; i++) {
             const row = await subcategoryModel.getSingleForUserByCID(category[i].CID);
-            category[i].subcategories = row;
+            category[i].subcategories = row || [];
             category[i].PID = pid;
-            for (var j = 0; j < category[i].subcategories.length; j++) {
+            for (let j = 0; j < category[i].subcategories.length; j++) {
                 category[i].subcategories[j].PID = pid;
             }
         }
 
-        const post = pst[0];
         res.render('vwPosts/move', {
             cate_post,
             sub_post,
             category,
-            post
-        })
+            post: pst
+        });
     } else {
         res.redirect('/');
     }
-})
+});
 
 router.get('/move/:pid/:cid', async function (req, res) {
     if (req.isAuthenticated() && req.user.Permission > 1) {
@@ -216,44 +236,67 @@ router.post('/upload/:id', function (req, res) {
 router.get('/:id', async function (req, res) {
     if (req.isAuthenticated() && req.user.Permission === 3) {
         const id = +req.params.id || -1;
+
+        // Lấy bài viết theo ID
         const post = await postModel.singleByPostID(id);
-        const rows = post[0];
-        if (rows.TimePost !== null) {
-            rows.Time = moment(rows.TimePost, 'YYYY-MM-DD hh:mm:ss').format('hh:mmA DD/MM/YYYY');
+
+        // Kiểm tra nếu không tìm thấy bài viết
+        if (!post) {
+            return res.status(404).send('Post not found');
         }
-        const uid_post = await userModel.singleByUserID(rows.UID);
-        rows.UserName = uid_post.UserName;
-        rows.U_FullName = uid_post.Fullname;
-        
+
+        // Format thời gian nếu tồn tại
+        if (post.TimePost) {
+            post.Time = moment(post.TimePost, 'YYYY-MM-DD hh:mm:ss').format('hh:mmA DD/MM/YYYY');
+        }
+
+        // Lấy thông tin người dùng
+        const uid_post = await userModel.singleByUserID(post.UID);
+        post.UserName = uid_post && uid_post.UserName ? uid_post.UserName : 'Unknown User';
+        post.U_FullName = uid_post && uid_post.Fullname ? uid_post.Fullname : 'Unknown Fullname';
+
+        // Render bài viết
         res.render('vwPosts/article', {
-            rows
+            rows: post
         });
     } else {
         res.redirect('/');
     }
-})
+});
 
 router.get('/edit/:id', async function (req, res) {
-    const id = +req.params.id;
+    const id = +req.params.id || -1;
+
+    // Lấy bài viết theo ID
     const post = await postModel.singleByPostID(id);
 
-    if (!post || !post.length) {
+    // Kiểm tra nếu không tìm thấy bài viết
+    if (!post) {
+        return res.status(404).send('Post not found');
+    }
+
+    // Kiểm tra quyền của người dùng
+    if (!req.isAuthenticated() || !(req.user.Permission === 3 || (req.user.Permission === 1 && (post.Duyet === 0 || post.Duyet === 1)))) {
         return res.redirect('/');
     }
 
-    const postInfo = post[0];
+    // Lấy thông tin danh mục và danh mục con
+    const category = await categoryModel.singleByCID(post.CID);
+    const sub = await subcategoryModel.getSingleForUserByCID(post.SCID);
 
-    if (!req.isAuthenticated() || !(req.user.Permission === 1 && (postInfo.Duyet === 0 || postInfo.Duyet === 1)) && req.user.Permission !== 3) {
-            const category = await categoryModel.singleByCID(postInfo.CID);
-            const subcategory = await subcategoryModel.getSingleForUserByCID(postInfo.SCID);
-        
-            postInfo.SCName = subcategory && subcategory.length ? subcategory[0].SCName : '';
-            postInfo.CName = category.CName;
+    // Kiểm tra nếu danh mục hoặc danh mục con không tồn tại
+    if (!category || !sub || sub.length === 0) {
+        return res.status(404).send('Category or Subcategory not found');
     }
 
+    const subcategory = sub[0];
+    post.CName = category.CName || 'Unknown Category';
+    post.SCName = subcategory.SCName || 'Unknown Subcategory';
+
+    // Render trang chỉnh sửa
     res.render('vwPosts/edit', {
-        post: postInfo,
-        Premium: postInfo.Premium === 1,
+        post,
+        Premium: post.Premium === 1,
         qAdmin: req.user.Permission === 3
     });
 });
