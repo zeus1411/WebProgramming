@@ -2,12 +2,12 @@ import db from '../utils/db.js';
 
 export default {
   // Lấy bài viết theo PostID đã duyệt
-  singleByPostID: async (id) => {
+  singleByPostID: async function (id) {
     return await db('posts').where({ PostID: id, Duyet: 3 });
   },
 
   // Lấy 5 bài viết ngẫu nhiên trong cùng chuyên mục
-  tincungchuyenmuc: async (id) => {
+  tincungchuyenmuc: async function (id) {
     return await db('posts')
       .where({ SCID: id, Duyet: 3 })
       .orderByRaw('RAND()')
@@ -15,19 +15,19 @@ export default {
   },
 
   // Lấy bài viết theo UserID
-  singleByUserID: async (id) => {
+  singleByUserID: async function (id) {
     return await db('posts').where({ UID: id });
   },
 
   // Lấy bài viết mới nhất đã duyệt
-  new: async () => {
+  new: async function () {
     return await db('posts')
       .where({ Duyet: 3 })
       .orderBy('TimePost', 'DESC');
   },
 
   // Lấy bài viết mới nhất trong chuyên mục
-  new1: async (id) => {
+  new1: async function (id) {
     return await db('posts')
       .where({ Duyet: 3, CID: id })
       .orderBy('TimePost', 'DESC')
@@ -35,7 +35,7 @@ export default {
   },
 
   // Lấy 10 bài viết mới nhất đã duyệt
-  new10: async () => {
+  new10: async function () {
     return await db('posts')
       .where({ Duyet: 3 })
       .orderBy('TimePost', 'DESC')
@@ -43,7 +43,7 @@ export default {
   },
 
   // Lấy 10 bài viết hot nhất (xếp theo lượt xem)
-  hot10: async () => {
+  hot10: async function () {
     return await db('posts')
       .where({ Duyet: 3 })
       .orderBy('view', 'DESC')
@@ -51,14 +51,14 @@ export default {
   },
 
   // Lấy toàn bộ bài viết hot (xếp theo lượt xem)
-  hot: async () => {
+  hot: async function () {
     return await db('posts')
       .where({ Duyet: 3 })
       .orderBy('view', 'DESC');
   },
 
   // Lấy bài viết hot nhất
-  best: async () => {
+  best: async function () {
     return await db('posts')
       .where({ Duyet: 3 })
       .orderBy('view', 'DESC')
@@ -66,7 +66,7 @@ export default {
   },
 
   // Lấy 4 bài viết hot nhất
-  hot2: async () => {
+  hot2: async function () {
     return await db('posts')
       .where({ Duyet: 3 })
       .orderBy('view', 'DESC')
@@ -74,14 +74,14 @@ export default {
   },
 
   // Tăng lượt xem bài viết
-  upview: async (id) => {
+  upview: async function (id) {
     return await db('posts')
       .where({ PostID: id })
       .increment('view', 1);
   },
 
   // Tìm kiếm bài viết theo từ khóa
-  search: async (value) => {
+  search: async function (value) {
     return await db('posts')
       .where('PostTitle', 'like', `%${value}%`)
       .orWhere('SumContent', 'like', `%${value}%`)

@@ -66,7 +66,10 @@ router.get('/hot', async function (req, res) {
 });
 
 router.get('/:id', async function (req, res) {
-    const id = +req.params.id || -1;
+    const id = +req.params.id || -1; // Chắc chắn rằng id luôn có giá trị hợp lệ
+    if (id === -1) {
+        return res.status(400).send('Invalid ID');
+    }
     
     // Thay đổi cách xử lý kết quả từ singleByPostID
     const post = await postModel.singleByPostID(id);
