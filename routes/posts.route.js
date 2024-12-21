@@ -10,83 +10,69 @@ moment.locale('vi');
 
 router.get('/', async function (req, res) {
     if (req.isAuthenticated() && req.user.Permission === 3) {
-        const cate = await categoryModel.allForUser();
+        const cate = await categoryModel.allForUser ();
         const post = await postModel.all();
-        for (var i = 0; i < post.length; i++) {
-            post[i].Time = moment(post[i].TimePost, 'YYYY-MM-DD hh:mm:ss').format('hh:mmA DD/MM/YYYY');
-            const cat_post = await categoryModel.single(post[i].CID);
-            post[i].CName = cat_post[0].CName;
-            const subcat_post = await subcategoryModel.getSingleForUserByCID(post[i].SCID);
-            if (post[i].SCID !== null) { post[i].SCName = ' / '+subcat_post[0].SCName; }
-            const uid_post = await userModel.singleByUserID(post[i].UID);
-            post[i].UserName = uid_post.UserName;
-            if (post[i].xoa === 1) { post[i].Delete = true; } 
-            if (post[i].Premium === 1) { post[i].Pre = true; } 
-        }
-        const post_ChuaDuyet = await postModel.allByStatus(0);
-        for (var i = 0; i < post_ChuaDuyet.length; i++) {
-            post_ChuaDuyet[i].Time = moment(post_ChuaDuyet[i].TimePost, 'YYYY-MM-DD hh:mm:ss').format('hh:mmA DD/MM/YYYY');
-            const cat_post = await categoryModel.single(post_ChuaDuyet[i].CID);
-            post_ChuaDuyet[i].CName = cat_post[0].CName;
-            const subcat_post = await subcategoryModel.getSingleForUserByCID(post_ChuaDuyet[i].SCID);
-            if (post_ChuaDuyet[i].SCID !== null) { post_ChuaDuyet[i].SCName = ' / '+subcat_post[0].SCName; }
-            const uid_post = await userModel.singleByUserID(post_ChuaDuyet[i].UID);
-            post_ChuaDuyet[i].UserName = uid_post.UserName;
-            if (post_ChuaDuyet[i].xoa === 1) { post_ChuaDuyet[i].Delete = true; } 
-            if (post_ChuaDuyet[i].Premium === 1) { post_ChuaDuyet[i].Pre = true; } 
 
+        // Process each post
+        for (const postItem of post) {
+            postItem.Time = moment(postItem.TimePost, 'YYYY-MM-DD hh:mm:ss').format('hh:mmA DD/MM/YYYY');
+            const cat_post = await categoryModel.single(postItem.CID);
+            postItem.CName = cat_post[0].CName;
+
+            const subcat_post = await subcategoryModel.getSingleForUserByCID(postItem.SCID);
+            if (subcat_post && subcat_post.length > 0) {
+                postItem.SCName = ' / ' + subcat_post[0].SCName;
+            } else {
+                postItem.SCName = ''; // Handle case where subcategory is not found
+            }
+
+            const uid_post = await userModel.singleByUserID(postItem.UID);
+            postItem.UserName = uid_post.UserName;
+
+            postItem.Delete = postItem.xoa === 1; 
+            postItem.Pre = postItem.Premium === 1;  
         }
-        const post_TuChoi = await postModel.allByStatus(1);
-        for (var i = 0; i < post_TuChoi.length; i++) {
-            post_TuChoi[i].Time = moment(post_TuChoi[i].TimePost, 'YYYY-MM-DD hh:mm:ss').format('hh:mmA DD/MM/YYYY');
-            const cat_post = await categoryModel.single(post_TuChoi[i].CID);
-            post_TuChoi[i].CName = cat_post[0].CName;
-            const subcat_post = await subcategoryModel.getSingleForUserByCID(post_TuChoi[i].SCID);
-            if (post_TuChoi[i].SCID !== null) { post_TuChoi[i].SCName = ' / '+subcat_post[0].SCName; }
-            const uid_post = await userModel.singleByUserID(post_TuChoi[i].UID);
-            post_TuChoi[i].UserName = uid_post.UserName;
-            if (post_TuChoi[i].xoa === 1) { post_TuChoi[i].Delete = true; } 
-            if (post_TuChoi[i].Premium === 1) { post_TuChoi[i].Pre = true; } 
+
+        // Process posts by status
+        const statuses = [0, 1, 2, 3]; // Statuses: 0 = Chua Duyet, 1 = Tu Choi, 2 = Cho Xuat Ban, 3 = Xuat Ban
+        const postByStatus = {};
+
+        for (const status of statuses) {
+            const postsByStatus = await postModel.allByStatus(status);
+            for (const postItem of postsByStatus) {
+                postItem.Time = moment(postItem.TimePost, 'YYYY-MM-DD hh:mm:ss').format('hh:mmA DD/MM/YYYY');
+                const cat_post = await categoryModel.single(postItem.CID);
+                postItem.CName = cat_post[0].CName;
+
+                const subcat_post = await subcategoryModel.getSingleForUserByCID(postItem.SCID);
+                if (subcat_post && subcat_post.length > 0) {
+                    postItem.SCName = ' / ' + subcat_post[0].SCName;
+                } else {
+                    postItem.SCName = ''; // Handle case where subcategory is not found
+                }
+
+                const uid_post = await userModel.singleByUserID(postItem.UID);
+                postItem.UserName = uid_post.UserName;
+
+                postItem.Delete = postItem.xoa === 1; 
+                postItem.Pre = postItem.Premium === 1;  
+            }
+            postByStatus[status] = postsByStatus; // Store posts by status
         }
-        const post_ChoXuatBan = await postModel.allByStatus(2);
-        for (var i = 0; i < post_ChoXuatBan.length; i++) {
-            post_ChoXuatBan[i].Time = moment(post_ChoXuatBan[i].TimePost, 'YYYY-MM-DD hh:mm:ss').format('hh:mmA DD/MM/YYYY');
-            const cat_post = await categoryModel.single(post_ChoXuatBan[i].CID);
-            post_ChoXuatBan[i].CName = cat_post[0].CName;
-            const subcat_post = await subcategoryModel.getSingleForUserByCID(post_ChoXuatBan[i].SCID);
-            if (post_ChoXuatBan[i].SCID !== null) { post_ChoXuatBan[i].SCName = ' / '+subcat_post[0].SCName; }
-            const uid_post = await userModel.singleByUserID(post_ChoXuatBan[i].UID);
-            post_ChoXuatBan[i].UserName = uid_post.UserName;
-            if (post_ChoXuatBan[i].xoa === 1) { post_ChoXuatBan[i].Delete = true; } 
-            if (post_ChoXuatBan[i].Premium === 1) { post_ChoXuatBan[i].Pre = true; } 
-        }
-        const post_XuatBan = await postModel.allByStatus(3);
-        for (var i = 0; i < post_XuatBan.length; i++) {
-            post_XuatBan[i].Time = moment(post_XuatBan[i].TimePost, 'YYYY-MM-DD hh:mm:ss').format('hh:mmA DD/MM/YYYY');
-            const cat_post = await categoryModel.single(post_XuatBan[i].CID);
-            post_XuatBan[i].CName = cat_post[0].CName;
-            const subcat_post = await subcategoryModel.getSingleForUserByCID(post_XuatBan[i].SCID);
-            if (post_XuatBan[i].SCID !== null) { post_XuatBan[i].SCName = ' / '+subcat_post[0].SCName; }
-            const uid_post = await userModel.singleByUserID(post_XuatBan[i].UID);
-            post_XuatBan[i].UserName = uid_post.UserName;
-            if (post_XuatBan[i].xoa === 1) { post_XuatBan[i].Delete = true; } 
-            if (post_XuatBan[i].Premium === 1) { post_XuatBan[i].Pre = true; } 
-        }
-        console.log(post_TuChoi)
+
         res.render('vwPosts/home', {
             post,
             list: cate,
             empty: cate.length === 0,
-            post_ChuaDuyet,
-            post_TuChoi,
-            post_ChoXuatBan,
-            post_XuatBan
+            post_ChuaDuyet: postByStatus[0],
+            post_TuChoi: postByStatus[1],
+            post_ChoXuatBan: postByStatus[2],
+            post_XuatBan: postByStatus[3]
         });
     } else {
-        res.redirect('/')
+        res.redirect('/');
     }
-})
-
+});
 router.get('/status/:pid', async function(req, res) {
     if (req.isAuthenticated() && req.user.Permission > 1) {
         const pid = +req.params.pid || -1;
@@ -163,14 +149,26 @@ router.get('/move/:pid', async function(req, res) {
     }
 })
 
-router.get('/move/:pid/tocat/:cid', async function (req, res) {
+router.get('/move/:pid/:cid', async function (req, res) {
     if (req.isAuthenticated() && req.user.Permission > 1) {
-        const pid = +req.params.pid || -1;
-        const cid = +req.params.cid || -1;
-        const scid = null;
-    
-        await postModel.move(pid, cid, scid);
-        res.redirect('/admin/posts/cat/'+cid);
+        try {
+            const pid = +req.params.pid;
+            const cid = +req.params.cid;
+
+            // Move the post to the new category
+            await postModel.move(pid, cid);
+
+            // Fetch posts for the new category
+            const posts = await postModel.singleByCID(cid);
+
+            // Render the posts in the category view
+            res.render('admin/posts/cat/' + cid, {
+                posts
+            })
+        } catch (error) {
+            console.error(error);
+            res.status(500).send('Error moving post');
+        }
     } else {
         res.redirect('/');
     }

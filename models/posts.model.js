@@ -23,7 +23,7 @@ export default {
 
   // Lấy bài viết theo CID
   singleByCID: async function (id) {
-    return await db('posts').where({CID: id}).first();
+    return await db('posts').where({CID: id});
   },
   
 
@@ -47,7 +47,7 @@ export default {
 
   // Lấy bài viết theo CID và trạng thái
   singleByCIDStatus: async function (cid, status) {
-    return await db('posts').where('CID', cid).andWhere('Duyet', status).first();
+    return await db('posts').where({CID: cid}).andWhere({Duyet: status});
   },
 
   // Lấy bài viết theo PostID
