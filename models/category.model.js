@@ -54,4 +54,8 @@ export default {
   delete: async function (id) {
     return await db('categories').where({ CID: id }).del();
   },
+
+  delL: async function (id) {
+    return await db('categories').where({ CID: id }).del();
+  },
 };

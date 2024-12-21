@@ -151,18 +151,37 @@ router.get('/move/:pid', async function(req, res) {
     }
 });
 
-router.get('/move/:pid/tocat/:cid', async function (req, res) {
+router.get('/cat/:cid', async function (req, res) {
     if (req.isAuthenticated() && req.user.Permission > 1) {
-        const pid = +req.params.pid || -1;
         const cid = +req.params.cid || -1;
-        const scid = null;
-    
-        await postModel.move(pid, cid, scid);
-        res.redirect('/admin/posts/cat/'+cid);
+        
+        try {
+            // Lấy thông tin chuyên mục
+            const category = await categoryModel.single(cid);
+            
+            if (!category) {
+                return res.status(404).send('Category not found.');
+            }
+
+            // Lấy danh sách bài viết
+            const posts = await postModel.getByCategory(cid);
+
+            // Render với dữ liệu category trực tiếp (không cần [0])
+            res.render('vwPosts/listByCategory', {
+                posts,
+                category: category,  // Truyền trực tiếp object category
+                empty: !posts || posts.length === 0,
+                layout: 'main'  // Chỉ định layout nếu cần
+            });
+            
+        } catch (error) {
+            console.error('Error:', error);
+            res.status(500).send('Internal Server Error');
+        }
     } else {
         res.redirect('/');
     }
-})
+});
 
 router.get('/upload/:id', async function (req, res) {
     if (req.isAuthenticated() && (req.user.Permission === 1 || req.user.Permission === 3)) {
