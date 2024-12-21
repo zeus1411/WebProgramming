@@ -2,36 +2,36 @@ import db from '../utils/db.js';
 
 export default {
   // Lấy tất cả bài viết
-  all: async () => {
+  all: async function () {
     return await db('posts'); // Truy vấn trực tiếp bảng 'posts'
   },
 
   // Lấy bài viết theo trạng thái
-  allByStatus: async (status) => {
+  allByStatus: async function (status) {
     return await db('posts').where('Duyet', status);
   },
 
   // Lấy bài viết sắp public
-  allPostSapPublic: async () => {
+  allPostSapPublic: async function () {
     return await db('posts').where('Duyet', 2);
   },
 
   // Thêm bài viết mới
-  add: async (entity) => {
+  add: async function (entity) {
     return await db('posts').insert(entity);
   },
 
   // Lấy bài viết theo CID
-  singleByCID: async (id) => {
-    return await db('posts').where({CID: id}).first();
+  singleByCID: async function (id) {
+    return await db('posts').where({CID: id});
   },
-
+  
   getByCategory: async (cid) => {
     return await db('posts').where({ CID: cid }).select();
   },
-
+  
   // Lấy bài viết xuất bản theo CID
-  singleByCIDXuatBan: async (cid) => {
+  singleByCIDXuatBan: async function (cid) {
     return await db('posts')
       .where({CID: cid})
       .andWhere({Duyet: 3})
@@ -40,7 +40,7 @@ export default {
   },
 
   // Lấy bài viết xuất bản theo SCID
-  singleBySCIDXuatBan: async (id) => {
+  singleBySCIDXuatBan: async function (id) {
     return await db('posts')
       .where('SCID', id)
       .andWhere('Duyet', 3)
@@ -49,53 +49,54 @@ export default {
   },
 
   // Lấy bài viết theo CID và trạng thái
-  singleByCIDStatus: async (cid, status) => {
-    return await db('posts').where('CID', cid).andWhere('Duyet', status).first();
+  singleByCIDStatus: async function (cid, status) {
+    return await db('posts').where({CID: cid}).andWhere({Duyet: status});
   },
 
   // Lấy bài viết theo PostID
-  singleByPostID: async (id) => {
-    return await db('posts').where('PostID', id).first();
+  singleByPostID: async function (id) {
+    return await db('posts').where('PostID', id);
   },
 
   // Lấy bài viết theo UID và trạng thái
-  singleByUserIDStatus: async (id, status) => {
-    return await db('posts').where('UID', id).andWhere('Duyet', status).first();
+  singleByUserIDStatus: async function (id, status) {
+    return await db('posts').where('UID', id).andWhere('Duyet', status);
   },
 
   // Lấy bài viết theo SCID
-  singleBySCID: async (id) => {
+  singleBySCID: async function (id) {
     return await db('posts').where('SCID', id).first();
   },
 
   // Lấy bài viết theo UID
+
   singleByUserID: async (userID) => {
-    return await db('posts').where('UID', userID).orderBy('TimePost', 'desc').first();
+    return await db('posts').where('UID', userID).orderBy('TimePost', 'desc');
 },
 
   // Cập nhật bài viết
-  patch: async (entity) => {
+  patch: async function (entity) {
     const { PostID, ...updateData } = entity; // Tách PostID khỏi dữ liệu cập nhật
     return await db('posts').where('PostID', PostID).update(updateData);
   },
 
   // Di chuyển bài viết sang CID và SCID mới
-  move: async (id, cid, scid) => {
+  move: async function (id, cid, scid) {
     return await db('posts').where('PostID', id).update({ CID: cid, SCID: scid });
   },
 
   // Đánh dấu bài viết là đã xóa
-  del: async (id) => {
+  del: async function (id) {
     return await db('posts').where('PostID', id).update({ xoa: 1 });
   },
 
   // Khôi phục bài viết
-  restore: async (id) => {
+  restore: async function (id) {
     return await db('posts').where('PostID', id).update({ xoa: 0 });
   },
 
   // Xóa bài viết vĩnh viễn
-  del2: async (id) => {
+  del2: async function (id) {
     return await db('posts').where('PostID', id).del();
   }
 };
