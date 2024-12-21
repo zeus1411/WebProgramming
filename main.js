@@ -70,14 +70,14 @@ app.use(function (req, res, next) {
   import commentModel from './models/comment.model.js';
 
 app.use(async function(req, res, next) {
-    const rows = await categoryModel.allforuser();
+    const rows = await categoryModel.allForUser();
     for (var i = 0; i < rows.length; i++) {
         if (i % 5 == 0) {
             rows[i].xd = 'margin-bottom: 45px;';
         }
     }
     for (var i = 0; i < rows.length; i++) {
-        const row = await subcategoryModel.singleforuser(rows[i].CID);
+        const row = await subcategoryModel.getSingleForUserByCID(rows[i].CID);
         rows[i].subcategories = row;
     }
     res.locals.lcCategories = rows;
@@ -114,7 +114,7 @@ app.get('/', async function (req, res) {
             const cat_post = await categoryModel.singleByCID(rows[0].CID);
 
             // Kiểm tra subcat_post trước khi truy cập
-            const subcat_post = await subcategoryModel.single2(rows[0].SCID);
+            const subcat_post = await subcategoryModel.getSingleBySCID(rows[0].SCID);
             rows[0].CName = cat_post.CName;
             if (rows[0].SCID !== null && subcat_post.length > 0) {
                 rows[0].SCName = subcat_post[0].SCName;
@@ -128,7 +128,7 @@ app.get('/', async function (req, res) {
             rows[0].countComment = countComment[0]?.Count || 0; // Xử lý khi countComment là undefined
             for (let i = 0; i < hot.length; i++) {
                 const cat = await categoryModel.singleByCID(hot[i].CID);
-                const subc = await subcategoryModel.single2(hot[i].SCID);
+                const subc = await subcategoryModel.getSingleBySCID(hot[i].SCID);
                 hot[i].CName = cat.CName;
                 if (hot[i].SCID !== null && subc.length > 0) {
                     hot[i].SCName = subc[0].SCName;
@@ -148,7 +148,7 @@ app.get('/', async function (req, res) {
             const new10 = await _postModel.new10();
             for (let i = 0; i < new10.length; i++) {
                 const cat = await categoryModel.singleByCID(new10[i].CID);
-                const subc = await subcategoryModel.single2(new10[i].SCID);
+                const subc = await subcategoryModel.getSingleBySCID(new10[i].SCID);
                 new10[i].CName = cat.CName;
                 if (new10[i].SCID !== null && subc.length > 0) {
                     new10[i].SCName = subc[0].SCName;
@@ -162,7 +162,7 @@ app.get('/', async function (req, res) {
             const hot10 = await _postModel.hot10();
             for (let i = 0; i < hot10.length; i++) {
                 const cat = await categoryModel.singleByCID(hot10[i].CID);
-                const subc = await subcategoryModel.single2(hot10[i].SCID);
+                const subc = await subcategoryModel.getSingleBySCID(hot10[i].SCID);
                 hot10[i].CName = cat.CName;
                 if (hot10[i].SCID !== null && subc.length > 0) {
                     hot10[i].SCName = subc[0].SCName;
@@ -173,9 +173,9 @@ app.get('/', async function (req, res) {
                 hot10[i].Pre = hot10[i].Premium === 1;
             }
 
-            const category = await categoryModel.allforuser();
+            const category = await categoryModel.allForUser();
             for (let i = 0; i < category.length; i++) {
-                const subcategory = await subcategoryModel.singleforuser(category[i].CID);
+                const subcategory = await subcategoryModel.getSingleForUserByCID(category[i].CID);
                 category[i].subcategory = subcategory;
                 const new1 = await _postModel.new1(category[i].CID);
                 category[i].new = new1;
