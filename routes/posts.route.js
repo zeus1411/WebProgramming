@@ -10,70 +10,52 @@ moment.locale('vi');
 
 router.get('/', async function (req, res) {
     if (req.isAuthenticated() && req.user.Permission === 3) {
-        const cate = await categoryModel.allForUser ();
+        const cate = await categoryModel.allForUser();
         const post = await postModel.all();
 
-        // Process each post
-        for (const postItem of post) {
-            postItem.Time = moment(postItem.TimePost, 'YYYY-MM-DD hh:mm:ss').format('hh:mmA DD/MM/YYYY');
-            const cat_post = await categoryModel.single(postItem.CID);
-            postItem.CName = cat_post[0].CName;
+        const processPost = async (post) => {
+            for (let i = 0; i < post.length; i++) {
+                post[i].Time = moment(post[i].TimePost, 'YYYY-MM-DD hh:mm:ss').format('hh:mmA DD/MM/YYYY');
+                
+                const cat_post = await categoryModel.single(post[i].CID);
+                post[i].CName = cat_post && cat_post.CName ? cat_post.CName : 'Unknown Category';
 
-            const subcat_post = await subcategoryModel.getSingleForUserByCID(postItem.SCID);
-            if (subcat_post && subcat_post.length > 0) {
-                postItem.SCName = ' / ' + subcat_post[0].SCName;
-            } else {
-                postItem.SCName = ''; // Handle case where subcategory is not found
+                const subcat_post = await subcategoryModel.getSingleForUserByCID(post[i].SCID);
+                post[i].SCName = (post[i].SCID !== null && subcat_post && subcat_post[0])
+                    ? ' / ' + subcat_post[0].SCName
+                    : '';
+
+                const uid_post = await userModel.singleByUserID(post[i].UID);
+                post[i].UserName = uid_post && uid_post.UserName ? uid_post.UserName : 'Unknown User';
+
+                post[i].Delete = post[i].xoa === 1;
+                post[i].Pre = post[i].Premium === 1;
             }
+        };
 
-            const uid_post = await userModel.singleByUserID(postItem.UID);
-            postItem.UserName = uid_post.UserName;
-
-            postItem.Delete = postItem.xoa === 1; 
-            postItem.Pre = postItem.Premium === 1;  
-        }
-
-        // Process posts by status
-        const statuses = [0, 1, 2, 3]; // Statuses: 0 = Chua Duyet, 1 = Tu Choi, 2 = Cho Xuat Ban, 3 = Xuat Ban
-        const postByStatus = {};
-
-        for (const status of statuses) {
-            const postsByStatus = await postModel.allByStatus(status);
-            for (const postItem of postsByStatus) {
-                postItem.Time = moment(postItem.TimePost, 'YYYY-MM-DD hh:mm:ss').format('hh:mmA DD/MM/YYYY');
-                const cat_post = await categoryModel.single(postItem.CID);
-                postItem.CName = cat_post[0].CName;
-
-                const subcat_post = await subcategoryModel.getSingleForUserByCID(postItem.SCID);
-                if (subcat_post && subcat_post.length > 0) {
-                    postItem.SCName = ' / ' + subcat_post[0].SCName;
-                } else {
-                    postItem.SCName = ''; // Handle case where subcategory is not found
-                }
-
-                const uid_post = await userModel.singleByUserID(postItem.UID);
-                postItem.UserName = uid_post.UserName;
-
-                postItem.Delete = postItem.xoa === 1; 
-                postItem.Pre = postItem.Premium === 1;  
-            }
-            postByStatus[status] = postsByStatus; // Store posts by status
-        }
+        await Promise.all([
+            processPost(post),
+            processPost(await postModel.allByStatus(0)), // Chưa Duyệt
+            processPost(await postModel.allByStatus(1)), // Từ Chối
+            processPost(await postModel.allByStatus(2)), // Chờ Xuất Bản
+            processPost(await postModel.allByStatus(3)), // Xuất Bản
+        ]);
 
         res.render('vwPosts/home', {
             post,
             list: cate,
             empty: cate.length === 0,
-            post_ChuaDuyet: postByStatus[0],
-            post_TuChoi: postByStatus[1],
-            post_ChoXuatBan: postByStatus[2],
-            post_XuatBan: postByStatus[3]
+            post_ChuaDuyet: await postModel.allByStatus(0),
+            post_TuChoi: await postModel.allByStatus(1),
+            post_ChoXuatBan: await postModel.allByStatus(2),
+            post_XuatBan: await postModel.allByStatus(3),
         });
     } else {
         res.redirect('/');
-        res.redirect('/');
     }
 });
+
+
 router.get('/status/:pid', async function(req, res) {
     if (req.isAuthenticated() && req.user.Permission > 1) {
         const pid = +req.params.pid || -1;
