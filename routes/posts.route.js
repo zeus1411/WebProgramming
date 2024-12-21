@@ -169,30 +169,37 @@ router.get('/move/:pid', async function(req, res) {
     }
 });
 
-router.get('/move/:pid/:cid', async function (req, res) {
+router.get('/cat/:cid', async function (req, res) {
     if (req.isAuthenticated() && req.user.Permission > 1) {
+        const cid = +req.params.cid || -1;
+        
         try {
-            const pid = +req.params.pid;
-            const cid = +req.params.cid;
+            // Lấy thông tin chuyên mục
+            const category = await categoryModel.single(cid);
+            
+            if (!category) {
+                return res.status(404).send('Category not found.');
+            }
 
-            // Move the post to the new category
-            await postModel.move(pid, cid);
+            // Lấy danh sách bài viết
+            const posts = await postModel.getByCategory(cid);
 
-            // Fetch posts for the new category
-            const posts = await postModel.singleByCID(cid);
-
-            // Render the posts in the category view
-            res.render('admin/posts/cat/' + cid, {
-                posts
-            })
+            // Render với dữ liệu category trực tiếp (không cần [0])
+            res.render('vwPosts/listByCategory', {
+                posts,
+                category: category,  // Truyền trực tiếp object category
+                empty: !posts || posts.length === 0,
+                layout: 'main'  // Chỉ định layout nếu cần
+            });
+            
         } catch (error) {
-            console.error(error);
-            res.status(500).send('Error moving post');
+            console.error('Error:', error);
+            res.status(500).send('Internal Server Error');
         }
     } else {
         res.redirect('/');
     }
-})
+});
 
 router.get('/upload/:id', async function (req, res) {
     if (req.isAuthenticated() && (req.user.Permission === 1 || req.user.Permission === 3)) {

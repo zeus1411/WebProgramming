@@ -25,7 +25,10 @@ export default {
   singleByCID: async function (id) {
     return await db('posts').where({CID: id});
   },
-  
+
+  getByCategory: async (cid) => {
+    return await db('posts').where({ CID: cid }).select();
+  },
 
   // Lấy bài viết xuất bản theo CID
   singleByCIDXuatBan: async function (cid) {
