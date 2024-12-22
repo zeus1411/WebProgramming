@@ -38,7 +38,7 @@ export default {
   // Lấy danh mục con theo SCID
   getSingleBySCID: async function (id) {
     try {
-      const subcategory = await db('subcategories').where('SCID', id).first();
+      const subcategory = await db('subcategories').where('SCID', id);
       return subcategory;
     } catch (error) {
       throw new Error('Lỗi khi lấy danh mục con theo SCID');
