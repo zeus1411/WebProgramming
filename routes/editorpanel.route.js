@@ -4,43 +4,84 @@ import categoryModel from '../models/category.model.js';
 import subcategoryModel from '../models/subcategory.model.js';
 import postModel from '../models/posts.model.js';
 import moment from 'moment';
-import commentModel from '../models/comment.model.js';
 import utilsModel from '../models/utils.model.js';
+
 const router = express.Router();
 
 router.get('/', async function (req, res) {
-    if (req.isAuthenticated() && req.user.Permission === 2) {
-        const categoryManager = await utilsModel.showCategoryManagerByUID(req.user.UserID);
-        for (var i = 0; i < categoryManager.length; i++) {
-            const category = await categoryModel.singleByCID(categoryManager[i].CID);
-            categoryManager[i].CName = category.CName;
-            categoryManager[i].post = await postModel.singleByCID(categoryManager[i].CID);
-            for (var j = 0; j < categoryManager[i].post.length; j++) {
-                categoryManager[i].post[j].Time = moment(categoryManager[i].post[j].TimePost, 'YYYY-MM-DD hh:mm:ss').fromNow();
-                if (categoryManager[i].post[j].TimePublic !== null) {
-                    categoryManager[i].post[j].F_TimePublic = 'Thời gian xuất bản: '+moment(categoryManager[i].post[j].TimePublic, 'YYYY-MM-DD hh:mm:ss').format('hh:mmA DD/MM/YYYY');
-                }
-                const cat_post = await categoryModel.single(categoryManager[i].post[j].CID);
-                categoryManager[i].post[j].CName = cat_post[0].CName;
-                const subcat_post = await subcategoryModel.getSingleForUserByCID(categoryManager[i].post[j].SCID);
-                if (categoryManager[i].post[j].SCID !== null) {
-                    categoryManager[i].post[j].SCName = ' / '+subcat_post[0].SCName;
-                }
-                const uid_post = await userModel.singleByUserID(categoryManager[i].post[j].UID);
-            }
-            categoryManager[i].postchuaduyet = await postModel.singleByCIDStatus(categoryManager[i].CID, 0);
-            categoryManager[i].posttuchoi = await postModel.singleByCIDStatus(categoryManager[i].CID, 1);
-            categoryManager[i].postchoxuatban = await postModel.singleByCIDStatus(categoryManager[i].CID, 2);
-            categoryManager[i].postdaxuatban = await postModel.singleByCIDStatus(categoryManager[i].CID, 3);
-
+    try {
+        if (!req.isAuthenticated() || req.user.Permission !== 2) {
+            return res.redirect('/');
         }
-        
+
+        // Lấy danh sách các danh mục mà người dùng quản lý
+        const categoryManager = await utilsModel.showCategoryManagerByUID(req.user.UserID);
+
+        // Lấy dữ liệu chi tiết của từng danh mục và bài viết bên trong
+        const enrichedCategories = await Promise.all(
+            categoryManager.map(async (categoryItem) => {
+                // Lấy chi tiết danh mục
+                const category = await categoryModel.singleByCID(categoryItem.CID);
+                const CName = category?.CName || 'Không rõ tên danh mục';
+
+                // Lấy danh sách bài viết theo CID
+                const posts = await postModel.singleByCID(categoryItem.CID);
+
+                // Làm giàu thông tin cho từng bài viết
+                const enrichedPosts = await Promise.all(
+                    posts.map(async (post) => {
+                        const Time = moment(post.TimePost, 'YYYY-MM-DD hh:mm:ss').fromNow();
+                        const F_TimePublic = post.TimePublic
+                            ? 'Thời gian xuất bản: ' + moment(post.TimePublic, 'YYYY-MM-DD hh:mm:ss').format('hh:mmA DD/MM/YYYY')
+                            : null;
+
+                        // Lấy thông tin danh mục con (subcategory)
+                        let SCName = 'Không có danh mục con';
+                        if (post.SCID !== null) {
+                            const subcat_post = await subcategoryModel.getSingleForUserByCID(post.SCID);
+                            SCName = subcat_post?.[0]?.SCName ? ' / ' + subcat_post[0].SCName : SCName;
+                        }
+
+                        // Lấy thông tin người dùng
+                        const uid_post = await userModel.singleByUserID(post.UID);
+                        const UserName = uid_post?.[0]?.Name || 'Không rõ người dùng';
+
+                        return {
+                            ...post,
+                            Time,
+                            F_TimePublic,
+                            SCName,
+                            UserName,
+                        };
+                    })
+                );
+
+                // Lấy các bài viết theo trạng thái (đã duyệt, từ chối, chờ xuất bản, đã xuất bản)
+                const postchuaduyet = await postModel.singleByCIDStatus(categoryItem.CID, 0);
+                const posttuchoi = await postModel.singleByCIDStatus(categoryItem.CID, 1);
+                const postchoxuatban = await postModel.singleByCIDStatus(categoryItem.CID, 2);
+                const postdaxuatban = await postModel.singleByCIDStatus(categoryItem.CID, 3);
+
+                return {
+                    ...categoryItem,
+                    CName,
+                    post: enrichedPosts,
+                    postchuaduyet,
+                    posttuchoi,
+                    postchoxuatban,
+                    postdaxuatban,
+                };
+            })
+        );
+
+        // Render giao diện editor với dữ liệu
         res.render('editor', {
-            categoryManager,
-        }) 
-    } else {
-        res.redirect('/');
+            categoryManager: enrichedCategories,
+        });
+    } catch (err) {
+        console.error('Error in /editor route:', err.message);
+        res.status(500).send('Có lỗi xảy ra khi xử lý dữ liệu.');
     }
-})
+});
 
 export default router;
