@@ -114,7 +114,7 @@ router.get('/del/:id', async function(req, res) {
             res.send('Invaild parameter.');
         const cid = rows[0].CID;
 
-        await subcategoryModel.del(req.params.id);
+        await subcategoryModel.hardDelete(req.params.id);
         res.redirect('/admin/subcategories/'+cid);
     } else {
         res.redirect('/')

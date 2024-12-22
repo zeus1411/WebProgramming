@@ -72,21 +72,27 @@ router.post('/search', async function (req, res) {
 router.get('/comment/like/:id', async function (req, res) {
   if (req.isAuthenticated()) {
     const id = +req.params.id || -1;
-    const comment = await commentModel.singleByComID(id) || [];
-    if (comment.length === 0) {
+
+    // Lấy bình luận theo ID
+    const comment = await commentModel.singleByComID(id);
+
+    // Kiểm tra nếu bình luận không tồn tại
+    if (!comment) {
       return res.redirect('/dangnhap');
     }
+
     const commentlike = await commentModel.singleLikeByComID(id);
     const entity = {
       ComID: id,
       UID: req.user.UserID
     };
 
-    if (commentlike && commentlike.length > 0 && req.user.UserID === commentlike[0].UID) {
-      res.redirect(`/post/${comment[0].PostID}#comment`);
+    if (commentlike && req.user.UserID === commentlike.UID) {
+      // Truy cập trực tiếp comment.PostID
+      res.redirect(`/post/${comment.PostID}#comment`);
     } else {
       await commentModel.addLike(entity);
-      res.redirect(`/post/${comment[0].PostID}#comment`);
+      res.redirect(`/post/${comment.PostID}#comment`);
     }
   } else {
     res.redirect('/dangnhap');

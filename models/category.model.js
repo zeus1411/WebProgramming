@@ -13,7 +13,7 @@ export default {
 
   // Lấy danh mục theo CID
   single: async function (id) {
-    return await db('categories').where({ CID: id });
+    return await db('categories').where({ CID: id }).select();
   },
 
   // Thêm danh mục mới
