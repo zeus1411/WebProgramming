@@ -15,18 +15,18 @@ router.get('/', async function (req, res) {
         try {
             const [category, post_by_UID, post_ChuaDuyet, post_TuChoi, post_ChoXuatBan, post_XuatBan] = await Promise.all([
                 categoryModel.allForUser (),
-                postModel.singleByUserID(req.user.UserID),
-                postModel.singleByUserIDStatus(req.user.UserID, 0),
-                postModel.singleByUserIDStatus(req.user.UserID, 1),
-                postModel.singleByUserIDStatus(req.user.UserID, 2),
-                postModel.singleByUserIDStatus(req.user.UserID, 3)
+                postModel.allByUserID(req.user.UserID),
+                postModel.allByUserIDStatus(req.user.UserID, 0),
+                postModel.allByUserIDStatus(req.user.UserID, 1),
+                postModel.allByUserIDStatus(req.user.UserID, 2),
+                postModel.allByUserIDStatus(req.user.UserID, 3)
             ]);
 
             // Ensure post_by_UID is an array
             const postsArray = Array.isArray(post_by_UID) ? post_by_UID : (post_by_UID ? [post_by_UID] : []);
 
             const posts = await Promise.all(postsArray.map(async (post) => {
-                const cat_post = await categoryModel.single(post.CID);
+                const cat_post = await categoryModel.allByCID(post.CID);
                 const subcat_post = await subcategoryModel.getSingleBySCID(post.SCID);
 
                 return {
