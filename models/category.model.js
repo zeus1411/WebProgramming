@@ -15,7 +15,10 @@ export default {
   single: async function (id) {
     return await db('categories').where({ CID: id }).first();
   },
-
+  multiplebyCID: async function (id) {
+    return await db('categories').where({ CID: id });
+  },
+  
   // Thêm danh mục mới
   add: async function (entity) {
     return await db('categories').insert(entity);
@@ -39,10 +42,13 @@ export default {
 
   // Lấy danh mục theo CID (trả về 1 đối tượng hoặc null)
   singleByCID: async function (id) {
-    const row = await db('categories').where({ CID: id }).first();
+    const row = await db('categories').where({ CID: id });
     return row || null;
   },
 
+  allbyCID: async function (id) { 
+    return await db('categories').where({ CID: id });
+  },
   // Lấy tất cả danh mục không bị xóa và không thuộc bảng categorymanager
   all2: async function () {
     return await db('categories')

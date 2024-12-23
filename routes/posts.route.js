@@ -56,34 +56,79 @@ router.get('/', async function (req, res) {
 });
 
 
-router.get('/status/:pid', async function(req, res) {
+router.get('/status/:pid', async function (req, res) {
     if (req.isAuthenticated() && req.user.Permission > 1) {
-        const pid = +req.params.pid || -1;
-        const pst = await postModel.singleByPostID(pid);
-        const cate_post = await categoryModel.singleByCID(pst[0].CID);
-        const subcate_post = await subcategoryModel.getSingleForUserByCID(pst[0].SCID);
-        const sub_post = subcate_post[0];
-        const category = await categoryModel.allForUser();
-        for (var i = 0; i < category.length; i++) {
-            const row = await subcategoryModel.getSingleForUserByCID(category[i].CID);
-            category[i].subcategories = row;
-            category[i].PID = pid;
-            for (var j = 0; j < category[i].subcategories.length; j++) {
-                category[i].subcategories[j].PID = pid;
-            }
-        }
+        try {
+            const pid = +req.params.pid || -1;
 
-        const post = pst[0];
-        res.render('vwPosts/status', {
-            cate_post,
-            sub_post,
-            category,
-            post
-        })
+            // Lấy dữ liệu bài viết
+            const pst = await postModel.singleByPostID(pid);
+            console.log('Post data received:', pst);
+
+            // Kiểm tra nếu không có dữ liệu
+            if (!pst) {
+                console.log('Post is null or undefined');
+                return res.status(404).send('Post not found - null/undefined');
+            }
+
+            // Chuyển đổi dữ liệu thành mảng nếu cần
+            const posts = Array.isArray(pst) ? pst : [pst];
+
+            // Kiểm tra mảng rỗng
+            if (posts.length === 0) {
+                console.log('Post array is empty');
+                return res.status(404).send('Post not found - empty array');
+            }
+
+            // Lấy bài viết đầu tiên từ mảng
+            const postData = posts[0];
+            console.log('Post details:', postData);
+
+            // Lấy danh mục bài viết
+            const cate_post = await categoryModel.singleByCID(postData.CID);
+            console.log('Category data:', cate_post);
+
+            if (!cate_post) {
+                return res.status(404).send('Category not found for the post');
+            }
+
+            // Lấy danh mục con bài viết
+            const subcate_post = await subcategoryModel.getSingleForUserByCID(postData.SCID);
+            console.log('Subcategory data:', subcate_post);
+
+            if (!subcate_post || subcate_post.length === 0) {
+                return res.status(404).send('Subcategory not found for the post');
+            }
+
+            const sub_post = subcate_post[0];
+
+            // Lấy tất cả danh mục và danh mục con
+            const category = await categoryModel.allForUser();
+            for (const cat of category) {
+                const row = await subcategoryModel.getSingleForUserByCID(cat.CID);
+                cat.subcategories = row || [];
+                cat.PID = pid;
+
+                for (const sub of cat.subcategories) {
+                    sub.PID = pid;
+                }
+            }
+
+            res.render('vwPosts/status', {
+                cate_post,
+                sub_post,
+                category,
+                post: postData,
+            });
+        } catch (error) {
+            console.error('Error in /status/:pid:', error);
+            res.status(500).send('Internal Server Error: ' + error.message);
+        }
     } else {
         res.redirect('/');
     }
-})
+});
+
 
 router.post('/status/:id', async function (req, res) {
     if (req.isAuthenticated() && req.user.Permission > 1) {
@@ -327,5 +372,36 @@ router.get('/delete/:id', async function (req, res) {
         res.redirect('/')
     }
 })
+
+router.get('/category/:id', async function (req, res) {
+    const categoryId = req.params.id;
+
+    try {
+        // Lấy thông tin của chuyên mục
+        const category = await categoryModel.singleByCID(categoryId);
+
+        if (!category) {
+            return res.render('categoryPosts', {
+                category: null
+            });
+        }
+
+        // Lấy danh sách bài viết thuộc chuyên mục
+        const posts = await postModel.singleByCID(categoryId);
+
+        // Kiểm tra nếu không có bài viết
+        const isEmpty = posts.length === 0;
+
+        // Render ra view
+        res.render('vwPosts/listByCatEditor', {
+            category,
+            posts,
+            empty: isEmpty
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Lỗi server');
+    }
+});
 
 export default router;

@@ -26,6 +26,10 @@ export default {
     return await db('posts').where({CID: id}).first();
   },
 
+  singleByCIDEditor: async (id) => {
+    return await db('posts').where({CID: id});
+  },
+
   getByCategory: async (cid) => {
     return await db('posts').where({ CID: cid }).select();
   },
@@ -53,6 +57,10 @@ export default {
     return await db('posts').where('CID', cid).andWhere('Duyet', status).first();
   },
 
+  singleByCIDStatusEditor: async (cid, status) => {
+    return await db('posts').where('CID', cid).andWhere('Duyet', status);
+  },
+
   // Lấy bài viết theo PostID
   singleByPostID: async (id) => {
     return await db('posts').where('PostID', id).first();
@@ -63,6 +71,9 @@ export default {
     return await db('posts').where('UID', id).andWhere('Duyet', status).first();
   },
 
+  singleByUserIDStatusEditor: async (id, status) => {
+    return await db('posts').where('UID', id).andWhere('Duyet', status);
+  },
   // Lấy bài viết theo SCID
   singleBySCID: async (id) => {
     return await db('posts').where('SCID', id).first();

@@ -33,7 +33,7 @@ const users = {
 
   // Lấy người dùng theo UserID
   async singleByUserID(id) {
-    return await db('users').where({ UserID: id }).first();
+    return await db('users').where({ UserID: id }).first(); // Đảm bảo UserID đúng
   },
 
   // Lấy người dùng theo username (không dùng async)

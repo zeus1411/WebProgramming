@@ -85,7 +85,7 @@ router.get('/:id', async function (req, res) {
         });
     } 
 
-    const ufullname = await userModel.singleByUserID(post.UID);
+    const ufullname = await userModel.singleByUserID(post.UID); // Đảm bảo UID đúng
     if (ufullname) { 
         post.U_FullName = ufullname.Fullname; 
     }
@@ -94,7 +94,7 @@ router.get('/:id', async function (req, res) {
     
     const comment = await commentModel.singleByPostID(id);
     for (const cmt of comment) {
-        const u = await userModel.singleByUserID(cmt.UID);
+        const u = await userModel.singleByUserID(cmt.UID); // Đảm bảo UID đúng
         if (u) {
             cmt.username = u.UserName;
             cmt.Time = moment(cmt.Date, 'YYYY-MM-DD hh:mm:ss').fromNow();
@@ -102,26 +102,13 @@ router.get('/:id', async function (req, res) {
     }
     
     const tincungchuyenmuc = await _postModel.tincungchuyenmuc(post.SCID);
-    await _postModel.upview(id);
-    
-    res.render('_vwPosts/news', {
-        post,
-        comment,
-        tincungchuyenmuc,
-        empty: tincungchuyenmuc.length === 0
+        // Render trang bài viết với các thông tin đã lấy
+        res.render('_vwPosts/news', {
+            post,
+            comments: comment,
+            tincungchuyenmuc
     });
 });
-
-router.post('/:id', async function (req, res) {
-    const id = +req.params.id || -1;
-    req.body.UID = req.user.UserID;
-    req.body.PostID = id;
-    var today = new Date();
-    var time = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate()+' '+today.getHours()+':'+today.getMinutes()+':'+today.getSeconds();
-    req.body.Date = time;
-    await commentModel.add(req.body);
-    res.redirect('/post/'+id);
-});
-
-
+    
+    // Xuất router để sử dụng trong ứng dụng
 export default router;

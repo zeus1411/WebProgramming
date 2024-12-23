@@ -9,39 +9,72 @@ import utilsModel from '../models/utils.model.js';
 const router = express.Router();
 
 router.get('/', async function (req, res) {
-    if (req.isAuthenticated() && req.user.Permission === 2) {
-        const categoryManager = await utilsModel.showCategoryManagerByUID(req.user.UserID);
-        for (var i = 0; i < categoryManager.length; i++) {
-            const category = await categoryModel.singleByCID(categoryManager[i].CID);
-            categoryManager[i].CName = category.CName;
-            categoryManager[i].post = await postModel.singleByCID(categoryManager[i].CID);
-            for (var j = 0; j < categoryManager[i].post.length; j++) {
-                categoryManager[i].post[j].Time = moment(categoryManager[i].post[j].TimePost, 'YYYY-MM-DD hh:mm:ss').fromNow();
-                if (categoryManager[i].post[j].TimePublic !== null) {
-                    categoryManager[i].post[j].F_TimePublic = 'Thời gian xuất bản: '+moment(categoryManager[i].post[j].TimePublic, 'YYYY-MM-DD hh:mm:ss').format('hh:mmA DD/MM/YYYY');
-                }
-                const cat_post = await categoryModel.single(categoryManager[i].post[j].CID);
-                categoryManager[i].post[j].CName = cat_post[0].CName;
-                const subcat_post = await subcategoryModel.getSingleForUserByCID(categoryManager[i].post[j].SCID);
-                if (categoryManager[i].post[j].SCID !== null) {
-                    categoryManager[i].post[j].SCName = ' / '+subcat_post[0].SCName;
-                }
-                const uid_post = await userModel.singleByUserID(categoryManager[i].post[j].UID);
-            }
-            categoryManager[i].postchuaduyet = await postModel.singleByCIDStatus(categoryManager[i].CID, 0);
-            categoryManager[i].posttuchoi = await postModel.singleByCIDStatus(categoryManager[i].CID, 1);
-            categoryManager[i].postchoxuatban = await postModel.singleByCIDStatus(categoryManager[i].CID, 2);
-            categoryManager[i].postdaxuatban = await postModel.singleByCIDStatus(categoryManager[i].CID, 3);
+    console.log('User auth:', req.isAuthenticated());
+    console.log('User permission:', req.user?.Permission);
 
+    if (req.isAuthenticated() && req.user.Permission === 2) {
+        try {
+            const categoryManager = await utilsModel.showCategoryManagerByUID(req.user.UserID);
+            console.log('Category Manager:', categoryManager);
+
+            if (!Array.isArray(categoryManager)) {
+                console.error('Expected categoryManager to be an array, but got:', categoryManager);
+                return res.status(400).send('Invalid category manager data');
+            }
+
+            const processCategory = async (category) => {
+                const cat = await categoryModel.allbyCID(category.CID);
+                if (cat.length > 0) {
+                    category.CName = cat[0].CName;
+                } else {
+                    category.CName = 'Unknown Category';
+                }
+                console.log('Category Details:', cat);
+
+                const posts = await postModel.singleByCIDEditor(category.CID);
+                console.log('Posts for Category', category.CID, ':', posts);
+                category.post = Array.isArray(posts) ? posts : [];
+
+                await Promise.all(category.post.map(async (post) => {
+                    post.Time = moment(post.TimePost, 'YYYY-MM-DD hh:mm:ss').fromNow();
+                    if (post.TimePublic !== null) {
+                        post.F_TimePublic = 'Thời gian xuất bản: ' + moment(post.TimePublic, 'YYYY-MM-DD hh:mm:ss').format('hh:mmA DD/MM/YYYY');
+                    }
+                    const cat_post = await categoryModel.single(post.CID);
+                    post.CName = cat_post?.[0]?.CName || '';
+
+                    if (post.SCID !== null) {
+                        const subcat_post = await subcategoryModel.getSingleForUserByCID(post.SCID);
+                        post.SCName = subcat_post?.[0]?.SCName ? ' / ' + subcat_post[0].SCName : '';
+                    }
+                }));
+
+                // Truy xuất các bài viết theo trạng thái
+                const statusPosts = [
+                    { key: 'postchuaduyet', status: 0 },
+                    { key: 'posttuchoi', status: 1 },
+                    { key: 'postchoxuatban', status: 2 },
+                    { key: 'postdaxuatban', status: 3 }
+                ];
+
+                for (const { key, status } of statusPosts) {
+                    category[key] = await postModel.singleByCIDStatusEditor(category.CID, status);
+                    category[key] = Array.isArray(category[key]) ? category[key] : [];
+                }
+            };
+
+            // Xử lý tất cả chuyên mục mà biên tập viên quản lý
+            await Promise.all(categoryManager.map(processCategory));
+
+            // Render dữ liệu ra giao diện
+            res.render('editor', { categoryManager });
+        } catch (error) {
+            console.error('Error processing category manager:', error);
+            res.status(500).send('Internal Server Error');
         }
-        
-        res.render('editor', {
-            categoryManager,
-        }) 
     } else {
         res.redirect('/');
     }
 });
-
 
 export default router;

@@ -1,4 +1,5 @@
 import db from '../utils/db.js';
+
 /**
  * Category Manager Model
  */
@@ -9,7 +10,9 @@ export default {
    * @returns {Promise} Category manager data
    */
   showCategoryManagerByUID: async function (id) {
-    return await db('categorymanager').where({ UserID: id });
+    // Thay đổi để trả về một mảng
+    const result = await db('categorymanager').where({ UserID: id }).select('*');
+    return Array.isArray(result) ? result : []; // Đảm bảo trả về mảng
   },
 
   /**
