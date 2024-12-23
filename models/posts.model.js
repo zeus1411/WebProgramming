@@ -2,96 +2,179 @@ import db from '../utils/db.js';
 
 export default {
   // Lấy tất cả bài viết
-  all: function () {
-    return db('posts'); // Truy vấn trực tiếp bảng 'posts'
+  all: async () => {
+    try {
+      return await db('posts');
+    } catch (err) {
+      console.error('Error in all:', err);
+      throw err;
+    }
   },
 
   // Lấy bài viết theo trạng thái
-  allByStatus: function (status) {
-    return db('posts').where('Duyet', status);
+  allByStatus: async (status) => {
+    try {
+      return await db('posts').where('Duyet', status);
+    } catch (err) {
+      console.error('Error in allByStatus:', err);
+      throw err;
+    }
   },
 
   // Lấy bài viết sắp public
-  allPostSapPublic: function () {
-    return db('posts').where('Duyet', 2);
+  allPostSapPublic: async () => {
+    try {
+      return await db('posts').where('Duyet', 2);
+    } catch (err) {
+      console.error('Error in allPostSapPublic:', err);
+      throw err;
+    }
   },
 
   // Thêm bài viết mới
-  add: function (entity) {
-    return db('posts').insert(entity);
+  add: async (entity) => {
+    try {
+      return await db('posts').insert(entity);
+    } catch (err) {
+      console.error('Error in add:', err);
+      throw err;
+    }
   },
 
   // Lấy bài viết theo CID
-  singleByCID: function (cid) {
-    return db('posts').where('CID', cid).first();
+  singleByCID: async (id) => {
+    try {
+      const result = await db('posts').where({ CID: id });
+      return result || []; // Trả về mảng rỗng nếu không tìm thấy
+    } catch (err) {
+      console.error('Error in singleByCID:', err);
+      throw err;
+    }
   },
 
-  // Lấy bài viết xuất bản theo CID
-  singleByCIDXuatBan: function (cid) {
-    return db('posts')
-      .where('CID', cid)
-      .andWhere('Duyet', 3)
-      .orderBy('TimePost', 'desc')
-      .first();
+  // Lấy bài viết theo trạng thái và CID
+  singleByCIDStatus: async (cid, status) => {
+    try {
+      return await db('posts').where({ CID: cid, Duyet: status });
+    } catch (err) {
+      console.error('Error in singleByCIDStatus:', err);
+      throw err;
+    }
   },
 
-  // Lấy bài viết xuất bản theo SCID
-  singleBySCIDXuatBan: function (id) {
-    return db('posts')
-      .where('SCID', id)
-      .andWhere('Duyet', 3)
-      .orderBy('TimePost', 'desc')
-      .first();
+  // Lấy bài viết đã xuất bản theo CID
+  singleByCIDXuatBan: async (cid) => {
+    try {
+      return await db('posts')
+        .where({ CID: cid, Duyet: 3 })
+        .orderBy('TimePost', 'desc')
+        .select(['PostID', 'PostTitle', 'TimePost', 'UID']);
+    } catch (err) {
+      console.error('Error in singleByCIDXuatBan:', err);
+      throw err;
+    }
   },
 
-  // Lấy bài viết theo CID và trạng thái
-  singleByCIDStatus: function (cid, status) {
-    return db('posts').where('CID', cid).andWhere('Duyet', status).first();
+  // Lấy bài viết đã xuất bản theo SCID
+  singleBySCIDXuatBan: async (id) => {
+    try {
+      return await db('posts')
+        .where({ SCID: id, Duyet: 3 })
+        .orderBy('TimePost', 'desc');
+    } catch (err) {
+      console.error('Error in singleBySCIDXuatBan:', err);
+      throw err;
+    }
   },
 
   // Lấy bài viết theo PostID
-  singleByPostID: function (id) {
-    return db('posts').where('PostID', id).first();
-  },
-
-  // Lấy bài viết theo UID và trạng thái
-  singleByUserIDStatus: function (id, status) {
-    return db('posts').where('UID', id).andWhere('Duyet', status).first();
+  singleByPostID: async (id) => {
+    try {
+      return await db('posts').where('PostID', id);
+    } catch (err) {
+      console.error('Error in singleByPostID:', err);
+      throw err;
+    }
   },
 
   // Lấy bài viết theo SCID
-  singleBySCID: function (id) {
-    return db('posts').where('SCID', id).first();
+  singleBySCID: async (id) => {
+    try {
+      return await db('posts').where('SCID', id);
+    } catch (err) {
+      console.error('Error in singleBySCID:', err);
+      throw err;
+    }
   },
 
   // Lấy bài viết theo UID
-  singleByUserID: function (id) {
-    return db('posts').where('UID', id).first();
+  singleByUserID: async (userID) => {
+    try {
+      return await db('posts').where('UID', userID).orderBy('TimePost', 'desc');
+    } catch (err) {
+      console.error('Error in singleByUserID:', err);
+      throw err;
+    }
+  },
+
+  // Lấy bài viết theo UID và trạng thái
+  singleByUserIDStatus: async (id, status) => {
+    try {
+      return await db('posts').where('UID', id).andWhere('Duyet', status);
+    } catch (err) {
+      console.error('Error in singleByUserIDStatus:', err);
+      throw err;
+    }
   },
 
   // Cập nhật bài viết
-  patch: function (entity) {
-    const { PostID, ...updateData } = entity; // Tách PostID khỏi dữ liệu cập nhật
-    return db('posts').where('PostID', PostID).update(updateData);
+  patch: async (entity) => {
+    try {
+      const { PostID, ...updateData } = entity;
+      return await db('posts').where('PostID', PostID).update(updateData);
+    } catch (err) {
+      console.error('Error in patch:', err);
+      throw err;
+    }
   },
 
   // Di chuyển bài viết sang CID và SCID mới
-  move: function (id, cid, scid) {
-    return db('posts').where('PostID', id).update({ CID: cid, SCID: scid });
+  move: async (id, cid, scid) => {
+    try {
+      return await db('posts').where('PostID', id).update({ CID: cid, SCID: scid });
+    } catch (err) {
+      console.error('Error in move:', err);
+      throw err;
+    }
   },
 
   // Đánh dấu bài viết là đã xóa
-  del: function (id) {
-    return db('posts').where('PostID', id).update({ xoa: 1 });
+  del: async (id) => {
+    try {
+      return await db('posts').where('PostID', id).update({ xoa: 1 });
+    } catch (err) {
+      console.error('Error in del:', err);
+      throw err;
+    }
   },
 
   // Khôi phục bài viết
-  restore: function (id) {
-    return db('posts').where('PostID', id).update({ xoa: 0 });
+  restore: async (id) => {
+    try {
+      return await db('posts').where('PostID', id).update({ xoa: 0 });
+    } catch (err) {
+      console.error('Error in restore:', err);
+      throw err;
+    }
   },
 
   // Xóa bài viết vĩnh viễn
-  del2: function (id) {
-    return db('posts').where('PostID', id).del();
+  del2: async (id) => {
+    try {
+      return await db('posts').where('PostID', id).del();
+    } catch (err) {
+      console.error('Error in del2:', err);
+      throw err;
+    }
   }
 };
