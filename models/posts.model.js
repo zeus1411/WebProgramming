@@ -70,6 +70,9 @@ export default {
   singleByUserIDStatus: async (id, status) => {
     return await db('posts').where('UID', id).andWhere('Duyet', status).first();
   },
+  allByUserIDStatus: async (id, status) => {
+    return await db('posts').where('UID', id).andWhere('Duyet', status);
+  },
 
   singleByUserIDStatusEditor: async (id, status) => {
     return await db('posts').where('UID', id).andWhere('Duyet', status);
@@ -83,6 +86,9 @@ export default {
   singleByUserID: async (userID) => {
     return await db('posts').where('UID', userID).orderBy('TimePost', 'desc').first();
 },
+  allByUserID: async (userID) => {
+    return await db('posts').where('UID', userID).orderBy('TimePost', 'desc');
+  },
 
   // Cập nhật bài viết
   patch: async (entity) => {

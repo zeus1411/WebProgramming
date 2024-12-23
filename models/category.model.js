@@ -15,6 +15,7 @@ export default {
   single: async function (id) {
     return await db('categories').where({ CID: id }).first();
   },
+  
   multiplebyCID: async function (id) {
     return await db('categories').where({ CID: id });
   },
