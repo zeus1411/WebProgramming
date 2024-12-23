@@ -60,9 +60,24 @@ router.get('/status/:pid', async function(req, res) {
     if (req.isAuthenticated() && req.user.Permission > 1) {
         const pid = +req.params.pid || -1;
         const pst = await postModel.singleByPostID(pid);
+
+        //Kiểm tra nếu không tìm thấy bài viết 
+        if (!pst || pst.length === 0) {
+            return res.status(404).send('Không tìm thấy bài viết.');
+        }     
+        
+        //const post = pst[0];
+
         const cate_post = await categoryModel.singleByCID(pst[0].CID);
+        if (!cate_post)
+        {
+            return res.status(404).send('Không tìm thấy danh mục.');
+        }
+
+        //Kiểm tra và lấy thông tin danh mục con 
         const subcate_post = await subcategoryModel.getSingleForUserByCID(pst[0].SCID);
-        const sub_post = subcate_post[0];
+        const sub_post = (subcate_post && subcate_post.length > 0) ? subcate_post[0] : null;
+
         const category = await categoryModel.allForUser();
         for (var i = 0; i < category.length; i++) {
             const row = await subcategoryModel.getSingleForUserByCID(category[i].CID);
@@ -111,7 +126,7 @@ router.get('/move/:pid', async function(req, res) {
         const pst = await postModel.singleByPostID(pid);
 
         // Kiểm tra nếu bài viết không tồn tại
-        if (!pst) {
+        if (!pst || pst.length === 0) {
             return res.status(404).send('Post not found');
         }
 
@@ -230,9 +245,10 @@ router.get('/:id', async function (req, res) {
         const post = await postModel.singleByPostID(id);
 
         // Kiểm tra nếu không tìm thấy bài viết
-        if (!post) {
+        if (!post || post.length === 0) {
             return res.status(404).send('Post not found');
         }
+        const postData = post[0];
 
         // Format thời gian nếu tồn tại
         if (post.TimePost) {

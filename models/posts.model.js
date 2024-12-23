@@ -55,7 +55,7 @@ export default {
   // Lấy bài viết theo trạng thái và CID
   singleByCIDStatus: async (cid, status) => {
     try {
-      return await db('posts').where({ CID: cid, Duyet: status }).first() || null;
+      return await db('posts').where({ CID: cid, Duyet: status });
     } catch (err) {
       console.error('Error in singleByCIDStatus:', err);
       throw err;
@@ -90,7 +90,7 @@ export default {
   // Lấy bài viết theo PostID
   singleByPostID: async (id) => {
     try {
-      return await db('posts').where('PostID', id).first() || null;
+      return await db('posts').where('PostID', id);
     } catch (err) {
       console.error('Error in singleByPostID:', err);
       throw err;
@@ -100,7 +100,7 @@ export default {
   // Lấy bài viết theo SCID
   singleBySCID: async (id) => {
     try {
-      return await db('posts').where('SCID', id).first() || null;
+      return await db('posts').where('SCID', id);
     } catch (err) {
       console.error('Error in singleBySCID:', err);
       throw err;
@@ -110,7 +110,7 @@ export default {
   // Lấy bài viết theo UID
   singleByUserID: async (userID) => {
     try {
-      return await db('posts').where('UID', userID).orderBy('TimePost', 'desc').first() || null;
+      return await db('posts').where('UID', userID).orderBy('TimePost', 'desc');
     } catch (err) {
       console.error('Error in singleByUserID:', err);
       throw err;
@@ -120,7 +120,7 @@ export default {
   // Lấy bài viết theo UID và trạng thái
   singleByUserIDStatus: async (id, status) => {
     try {
-      return await db('posts').where('UID', id).andWhere('Duyet', status).first() || null;
+      return await db('posts').where('UID', id).andWhere('Duyet', status);
     } catch (err) {
       console.error('Error in singleByUserIDStatus:', err);
       throw err;
