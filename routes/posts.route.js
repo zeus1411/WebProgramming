@@ -205,7 +205,7 @@ router.post('/upload/:id', function (req, res) {
                 cb(null, tenfile);
             },
             destination(req, file, cb) {
-                cb(null, './public/images');
+                cb(null, './public/images/avatarPost');
             }
         })
 

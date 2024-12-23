@@ -15,7 +15,9 @@ export default {
   single: async function (id) {
     return await db('categories').where({ CID: id }).first();
   },
-
+  allByCID: async function (id) {
+    return await db('categories').where({ CID: id });
+  },
   // Thêm danh mục mới
   add: async function (entity) {
     return await db('categories').insert(entity);
