@@ -63,11 +63,9 @@ router.get('/status/:pid', async function (req, res) {
 
             // Lấy dữ liệu bài viết
             const pst = await postModel.singleByPostID(pid);
-            console.log('Post data received:', pst);
 
             // Kiểm tra nếu không có dữ liệu
             if (!pst) {
-                console.log('Post is null or undefined');
                 return res.status(404).send('Post not found - null/undefined');
             }
 
@@ -76,17 +74,14 @@ router.get('/status/:pid', async function (req, res) {
 
             // Kiểm tra mảng rỗng
             if (posts.length === 0) {
-                console.log('Post array is empty');
                 return res.status(404).send('Post not found - empty array');
             }
 
             // Lấy bài viết đầu tiên từ mảng
             const postData = posts[0];
-            console.log('Post details:', postData);
 
             // Lấy danh mục bài viết
             const cate_post = await categoryModel.singleByCID(postData.CID);
-            console.log('Category data:', cate_post);
 
             if (!cate_post) {
                 return res.status(404).send('Category not found for the post');
@@ -94,7 +89,6 @@ router.get('/status/:pid', async function (req, res) {
 
             // Lấy danh mục con bài viết
             const subcate_post = await subcategoryModel.getSingleForUserByCID(postData.SCID);
-            console.log('Subcategory data:', subcate_post);
 
             if (!subcate_post || subcate_post.length === 0) {
                 return res.status(404).send('Subcategory not found for the post');
