@@ -9,16 +9,11 @@ import utilsModel from '../models/utils.model.js';
 const router = express.Router();
 
 router.get('/', async function (req, res) {
-    console.log('User auth:', req.isAuthenticated());
-    console.log('User permission:', req.user?.Permission);
-
     if (req.isAuthenticated() && req.user.Permission === 2) {
         try {
             const categoryManager = await utilsModel.showCategoryManagerByUID(req.user.UserID);
-            console.log('Category Manager:', categoryManager);
 
             if (!Array.isArray(categoryManager)) {
-                console.error('Expected categoryManager to be an array, but got:', categoryManager);
                 return res.status(400).send('Invalid category manager data');
             }
 
@@ -29,10 +24,8 @@ router.get('/', async function (req, res) {
                 } else {
                     category.CName = 'Unknown Category';
                 }
-                console.log('Category Details:', cat);
 
                 const posts = await postModel.singleByCIDEditor(category.CID);
-                console.log('Posts for Category', category.CID, ':', posts);
                 category.post = Array.isArray(posts) ? posts : [];
 
                 await Promise.all(category.post.map(async (post) => {
