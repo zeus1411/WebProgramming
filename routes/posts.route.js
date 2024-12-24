@@ -367,34 +367,35 @@ router.get('/delete/:id', async function (req, res) {
     }
 })
 
-router.get('/category/:id', async function (req, res) {
-    const categoryId = req.params.id;
+router.get('/cat/:cid/post', async function (req, res) {
+    if (req.isAuthenticated() && req.user.Permission > 1) {
+        const cid = +req.params.cid || -1;
+        
+        try {
+            // Lấy thông tin chuyên mục
+            const category = await categoryModel.single(cid);
+            
+            if (!category) {
+                return res.status(404).send('Category not found.');
+            }
 
-    try {
-        // Lấy thông tin của chuyên mục
-        const category = await categoryModel.singleByCID(categoryId);
+            // Lấy danh sách bài viết
+            const posts = await postModel.getByCategory(cid);
 
-        if (!category) {
-            return res.render('categoryPosts', {
-                category: null
+            // Render với dữ liệu category trực tiếp (không cần [0])
+            res.render('vwPosts/listByCatEditor', {
+                posts,
+                category: category,  // Truyền trực tiếp object category
+                empty: !posts || posts.length === 0,
+                layout: 'main'  // Chỉ định layout nếu cần
             });
+            
+        } catch (error) {
+            console.error('Error:', error);
+            res.status(500).send('Internal Server Error');
         }
-
-        // Lấy danh sách bài viết thuộc chuyên mục
-        const posts = await postModel.singleByCID(categoryId);
-
-        // Kiểm tra nếu không có bài viết
-        const isEmpty = posts.length === 0;
-
-        // Render ra view
-        res.render('vwPosts/listByCatEditor', {
-            category,
-            posts,
-            empty: isEmpty
-        });
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('Lỗi server');
+    } else {
+        res.redirect('/');
     }
 });
 
