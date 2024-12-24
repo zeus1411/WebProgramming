@@ -17,14 +17,14 @@
 
     <div class="container" ><div class="row">
     <div class="col-sm-2 text-center">
-    <a href="/"><img src="/public/images/logo2.PNG" width="150px" height="70px"></a>
+    <a href="/"><img src="/public/images/logo.PNG" width="146.496px" height="55.381px"></a>
     </div>
     <div class="col-sm-6" style="margin: auto;">
     <center>
     <form class="form-inline" action="/search" method="POST">
     <input class="form-control mr-sm-2" type="text" name="search" id="search" placeholder="Nhập nội dung tìm kiếm" style="
     width: 426px;" required>    
-    <button class="btn btn-success" type="submit"><i class="fas fa-search"></i>Tìm Kiếm</button>
+    <button class="btn search" type="submit"><i class="fas fa-search"></i>Tìm Kiếm</button>
     </form>
     </center></div>
     <div class="col-sm-3 text-right" style="margin: auto;">
@@ -63,9 +63,10 @@
       </div> 
 
     <div class="sticky-top" style="z-index: 3;">
-    <nav class="navbar navbar-dark bg-success" style="
+    <nav class="navbar navbar-dark" style="
     padding: 0px 137px 0px 137px;
-    margin-left: 0px;">
+    margin-left: 0px;
+    background-color: #2f46a3";>
         <div id="menu">
             <ul>
             <li>
@@ -82,12 +83,12 @@
         </button>
     </nav>
     <div class="collapse" id="navbarToggleExternalContent">
-    <div class="shadow-sm p-4 bg-light "><div class="container">
+    <div class="shadow-sm p-4 "><div class="container">
                 <div class="row">
 
         {{#each lcCategories}}
             <div class="col-sm-2" style="{{xd}} margin-right: 30px">
-                <div class="text-success chuyenmuc"><a href="/cat/{{CID}}" class="text-success">{{CName}}</a></div>
+                <div class="chuyenmuc"><a href="/cat/{{CID}}">{{CName}}</a></div>
                     {{#each subcategories}}
                     <div class="subcate">
                         <a href="/subcat/{{SCID}}" class="text-dark">{{SCName}}</a>
