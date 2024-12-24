@@ -367,8 +367,8 @@ router.get('/delete/:id', async function (req, res) {
     }
 })
 
-router.get('/cat/:cid/post', async function (req, res) {
-    if (req.isAuthenticated() && req.user.Permission > 1) {
+router.get('/cat/:cid/editor_post', async function (req, res) {
+    if (req.isAuthenticated() && req.user.Permission > 0) {
         const cid = +req.params.cid || -1;
         
         try {
@@ -384,6 +384,38 @@ router.get('/cat/:cid/post', async function (req, res) {
 
             // Render với dữ liệu category trực tiếp (không cần [0])
             res.render('vwPosts/listByCatEditor', {
+                posts,
+                category: category,  // Truyền trực tiếp object category
+                empty: !posts || posts.length === 0,
+                layout: 'main'  // Chỉ định layout nếu cần
+            });
+            
+        } catch (error) {
+            console.error('Error:', error);
+            res.status(500).send('Internal Server Error');
+        }
+    } else {
+        res.redirect('/');
+    }
+});
+
+router.get('/cat/:cid/writer_post', async function (req, res) {
+    if (req.isAuthenticated() && req.user.Permission > 0) {
+        const cid = +req.params.cid || -1;
+        
+        try {
+            // Lấy thông tin chuyên mục
+            const category = await categoryModel.single(cid);
+            
+            if (!category) {
+                return res.status(404).send('Category not found.');
+            }
+
+            // Lấy danh sách bài viết
+            const posts = await postModel.getByCategory(cid);
+
+            // Render với dữ liệu category trực tiếp (không cần [0])
+            res.render('vwPosts/listByCatWriter', {
                 posts,
                 category: category,  // Truyền trực tiếp object category
                 empty: !posts || posts.length === 0,

@@ -47,7 +47,7 @@ export default {
     return row || null;
   },
 
-  allbyCID: async function (id) { 
+  allByCID: async function (id) { 
     return await db('categories').where({ CID: id });
   },
   // Lấy tất cả danh mục không bị xóa và không thuộc bảng categorymanager

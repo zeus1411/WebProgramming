@@ -1,0 +1,56 @@
+<div class="container mt-4">
+    {{#if category}}
+        <h1 class="mb-4">Bài viết trong chuyên mục: {{category.CName}}</h1>
+        
+        {{#if empty}}
+            <div class="card-body">
+                <p class="card-text">Không có bài viết nào trong chuyên mục này.</p>
+            </div>
+        {{else}}
+            <table class="table table-hover">
+                <thead class="bg-light text-dark">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Bài viết</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each posts}}
+                        <tr>
+                        <td>{{PostID}}</td>
+                        <td>
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <img src="/public/images/avatarPost/{{PostID}}.png" alt="" width="120px" height="100px">
+                            </div>
+                            <div class="col-sm-6">
+                                <strong>{{PostTitle}}</strong><br/>
+                        <span class="badge badge-pill badge-light text-secondary">{{CName}}{{SCName}}</span>
+                        <span class="badge badge-pill badge-light text-secondary">{{Time}}</span>
+                        <span class="badge badge-pill badge-light text-secondary">{{StatusPost}}</span>
+                        <span class="badge badge-pill badge-light text-secondary">{{F_TimePublic}}</span>
+                        {{#if Reason}}
+                            <span class="badge badge-pill badge-light text-secondary">Lí do: {{Reason}}</span>
+                        {{/if}}
+                        {{#if Pre}}
+                            <span class="badge badge-pill badge-danger text-white">Bài viết Premium</span>
+                        {{/if}}
+                            </div>
+                            <div class="col-sm-4 text-right">
+                                <a href="/post/{{PostID}}" class="btn btn-primary btn-sm"><i class="fas fa-arrow-circle-right">Xem</i></a>
+                                <a href="/admin/posts/edit/{{PostID}}" class="btn btn-primary btn-sm"><i class="far fa-edit">Sửa</i></a>
+                                <a href="/admin/posts/upload/{{PostID}}" class="btn btn-primary btn-sm"><i class="fas fa-cloud-upload-alt">Tải ảnh lên</i></a>
+                            </div>
+                        </div>
+                        </td>
+                        </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        {{/if}}
+    {{else}}
+        <div class="alert alert-danger">
+            <p>Không tìm thấy chuyên mục.</p>
+        </div>
+    {{/if}}
+</div>

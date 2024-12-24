@@ -18,7 +18,7 @@ router.get('/', async function (req, res) {
             }
 
             const processCategory = async (category) => {
-                const cat = await categoryModel.allbyCID(category.CID);
+                const cat = await categoryModel.allByCID(category.CID);
                 if (cat.length > 0) {
                     category.CName = cat[0].CName;
                 } else {
