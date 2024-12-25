@@ -55,7 +55,6 @@ router.get('/', async function (req, res) {
     }
 });
 
-
 router.get('/status/:pid', async function (req, res) {
     if (req.isAuthenticated() && req.user.Permission > 1) {
         try {
@@ -66,19 +65,11 @@ router.get('/status/:pid', async function (req, res) {
 
             // Kiểm tra nếu không có dữ liệu
             if (!pst) {
-                return res.status(404).send('Post not found - null/undefined');
-            }
-
-            // Chuyển đổi dữ liệu thành mảng nếu cần
-            const posts = Array.isArray(pst) ? pst : [pst];
-
-            // Kiểm tra mảng rỗng
-            if (posts.length === 0) {
-                return res.status(404).send('Post not found - empty array');
+                return res.status(404).send('Post not found');
             }
 
             // Lấy bài viết đầu tiên từ mảng
-            const postData = posts[0];
+            const postData = Array.isArray(pst) ? pst[0] : pst;
 
             // Lấy danh mục bài viết
             const cate_post = await categoryModel.singleByCID(postData.CID);
@@ -88,7 +79,7 @@ router.get('/status/:pid', async function (req, res) {
             }
 
             // Lấy danh mục con bài viết
-            const subcate_post = await subcategoryModel.getSingleForUserByCID(postData.SCID);
+            const subcate_post = await subcategoryModel.getSingleBySCID(postData.SCID);
 
             if (!subcate_post || subcate_post.length === 0) {
                 return res.status(404).send('Subcategory not found for the post');
@@ -122,7 +113,6 @@ router.get('/status/:pid', async function (req, res) {
         res.redirect('/');
     }
 });
-
 
 router.post('/status/:id', async function (req, res) {
     if (req.isAuthenticated() && req.user.Permission > 1) {
@@ -293,40 +283,45 @@ router.get('/:id', async function (req, res) {
 });
 
 router.get('/edit/:id', async function (req, res) {
-    const id = +req.params.id || -1;
+    try {
+        const id = +req.params.id || -1;
 
-    // Lấy bài viết theo ID
-    const post = await postModel.singleByPostID(id);
+        // Lấy bài viết theo ID
+        const post = await postModel.singleByPostID(id);
 
-    // Kiểm tra nếu không tìm thấy bài viết
-    if (!post) {
-        return res.status(404).send('Post not found');
+        // Kiểm tra nếu không tìm thấy bài viết
+        if (!post) {
+            return res.status(404).send('Post not found');
+        }
+
+        // Kiểm tra quyền của người dùng
+        if (!req.isAuthenticated() || !(req.user.Permission === 3 || (req.user.Permission === 1 && (post.Duyet === 0 || post.Duyet === 1)))) {
+            return res.redirect('/');
+        }
+
+        // Lấy thông tin danh mục và danh mục con
+        const category = await categoryModel.singleByCID(post.CID);
+        const sub = await subcategoryModel.getSingleBySCID(post.SCID);
+
+        // Kiểm tra nếu danh mục hoặc danh mục con không tồn tại
+        if (!category || !sub || sub.length === 0) {
+            return res.status(404).send('Category or Subcategory not found');
+        }
+
+        const subcategory = sub[0];
+        post.CName = category.CName || 'Unknown Category';
+        post.SCName = subcategory.SCName || 'Unknown Subcategory';
+
+        // Render trang chỉnh sửa
+        res.render('vwPosts/edit', {
+            post,
+            Premium: post.Premium === 1,
+            qAdmin: req.user.Permission === 3
+        });
+    } catch (error) {
+        console.error('Error in /edit/:id:', error);
+        res.status(500).send('Internal Server Error: ' + error.message);
     }
-
-    // Kiểm tra quyền của người dùng
-    if (!req.isAuthenticated() || !(req.user.Permission === 3 || (req.user.Permission === 1 && (post.Duyet === 0 || post.Duyet === 1)))) {
-        return res.redirect('/');
-    }
-
-    // Lấy thông tin danh mục và danh mục con
-    const category = await categoryModel.singleByCID(post.CID);
-    const sub = await subcategoryModel.getSingleForUserByCID(post.SCID);
-
-    // Kiểm tra nếu danh mục hoặc danh mục con không tồn tại
-    if (!category || !sub || sub.length === 0) {
-        return res.status(404).send('Category or Subcategory not found');
-    }
-
-    const subcategory = sub[0];
-    post.CName = category.CName || 'Unknown Category';
-    post.SCName = subcategory.SCName || 'Unknown Subcategory';
-
-    // Render trang chỉnh sửa
-    res.render('vwPosts/edit', {
-        post,
-        Premium: post.Premium === 1,
-        qAdmin: req.user.Permission === 3
-    });
 });
 
 router.post('/update', async function (req, res) {

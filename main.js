@@ -98,14 +98,17 @@ app.use(async function(req, res, next) {
             Duyet: 3,
             StatusPost: 'Đã xuất bản'
         }
-        datetimep = moment(post[i].TimePublic, 'YYYY-MM-DD hh:mm:ss').format('YYYY-MM-DD hh:mm:ss');
+        
+        // Declare and initialize datetimep here
+        var datetimep = moment(post[i].TimePublic, 'YYYY-MM-DD hh:mm:ss').format('YYYY-MM-DD hh:mm:ss');
+        
         if (datetimep <= datetime) {
             await postModel.patch(entity);
         }
     }
 
     next();
-})
+});
 
 app.get('/', async function (req, res) {
     try {
