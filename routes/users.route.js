@@ -43,7 +43,7 @@ router.get('/edit/:id', async function(req, res) {
         const category = await categoryModel.all2();
         const categoryManager = await utilsModel.showCategoryManagerByUID(id);
         for (var i = 0; i < categoryManager.length; i++) {
-            const category = await categoryModel.singleByCID(categoryManager[i].CID);
+            const category = await categoryModel.singleByCID2(categoryManager[i].CID);
             categoryManager[i].CName = category.CName;
         }
         user.F_DOB = moment(user.DayOfBirth, 'YYYY-MM-DD').format('YYYY-MM-DD');
@@ -64,7 +64,7 @@ router.get('/edit/:id', async function(req, res) {
 router.post('/edit/:id', async function (req, res) {
     if (req.isAuthenticated() && req.user.Permission === 3) {
         const id = +req.params.id || -1;
-        const user = await userModel.singleByUserID(id);
+        const user = await userModel.singleByUserID2(id);
         req.body.DayOfBirth = moment(req.body.F_DOB, 'YYYY-MM-DD').format('YYYY-MM-DD');
         delete req.body.F_DOB;
         req.body.UserID = id

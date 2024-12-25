@@ -21,7 +21,7 @@ router.get('/:id', async function (req, res) {
             list = [];
         }
 
-        const rows = await categoryModel.single(id);
+        const rows = await categoryModel.single2(id);
         if (rows.length === 0)
             return res.send('Invalid parameter.');
         const category = rows[0];

@@ -15,6 +15,10 @@ export default {
   single: async function (id) {
     return await db('categories').where({ CID: id }).first();
   },
+
+  single2: async function (id) {
+    return await db('categories').where({ CID: id });
+  },
   
   multiplebyCID: async function (id) {
     return await db('categories').where({ CID: id });
@@ -44,6 +48,11 @@ export default {
   // Lấy danh mục theo CID (trả về 1 đối tượng hoặc null)
   singleByCID: async function (id) {
     const row = await db('categories').where({ CID: id });
+    return row || null;
+  },
+
+  singleByCID2: async function (id) {
+    const row = await db('categories').where({ CID: id }).first();
     return row || null;
   },
 
