@@ -235,10 +235,10 @@ CREATE TABLE `users`  (
 -- ----------------------------
 -- Records of users
 -- ----------------------------
-INSERT INTO `users` VALUES (1, 'admin', '$2a$08$zdBrvtMawm/skIayihcqQOGj6.BOwMtZkrxGZdehtNePbHVM5Iix.', '0969258024', 'quoctan342@gmail.com',105307758074725901875, 'Nguyễn Quốc Hưng', 'TP Hồ Chí Minh', '2004-11-14', 7, 3, 0, 30000, 1, '2020-08-17 00:40:26', '2020-08-24 00:40:26', NULL, NULL);
+INSERT INTO `users` VALUES (1, 'admin', '$2a$08$zdBrvtMawm/skIayihcqQOGj6.BOwMtZkrxGZdehtNePbHVM5Iix.', '0969258024', 'zeusgaming1411@gmail.com',105307758074725901875, 'Nguyễn Quốc Hưng', 'TP Hồ Chí Minh', '2004-11-14', 7, 3, 0, 30000, 1, '2024-12-25 00:40:26', '2025-01-01 00:40:26', NULL, NULL);
 INSERT INTO `users` VALUES (2, 'bao123', '$2a$08$zdBrvtMawm/skIayihcqQOGj6.BOwMtZkrxGZdehtNePbHVM5Iix.', '0928037610', 'baonguyenhuynhquocbl03@gmail.com',105307758074725901875, 'Nguyễn Huỳnh Quốc Bảo', 'Tp Hồ Chí Minh', '2004-02-22', 0, 2, 0, 0, 0, NULL, NULL, NULL, NULL);
 INSERT INTO `users` VALUES (3, 'huan123', '$2a$08$zdBrvtMawm/skIayihcqQOGj6.BOwMtZkrxGZdehtNePbHVM5Iix.', '03351485442', 'huanhanquoc1234@gmail.com',105307758074725901875, 'Đỗ Gia Huấn', 'Phú Yên', '2004-02-22', 0, 1, 0, 0, 0, NULL, NULL, NULL, NULL);
-INSERT INTO `users` VALUES (4, 'sy123', '$2a$08$zdBrvtMawm/skIayihcqQOGj6.BOwMtZkrxGZdehtNePbHVM5Iix.', '03351485441', 'syphongvien@gmail.com',105307758074725901875 , 'Lê Hoàng Sỹ', 'Lâm Đồng', '2004-09-19', 7, 1, 0, 0, 1, '2020-08-17 00:36:14', '2020-08-24 00:36:14', NULL, NULL);
+INSERT INTO `users` VALUES (4, 'sy123', '$2a$08$zdBrvtMawm/skIayihcqQOGj6.BOwMtZkrxGZdehtNePbHVM5Iix.', '03351485441', 'syphongvien@gmail.com',105307758074725901875 , 'Lê Hoàng Sỹ', 'Lâm Đồng', '2004-09-19', 7, 1, 0, 0, 1, '2024-12-24 00:36:14', '2024-12-31 00:36:14', NULL, NULL);
 INSERT INTO `users` VALUES (5, 'phong123', '$2a$08$zdBrvtMawm/skIayihcqQOGj6.BOwMtZkrxGZdehtNePbHVM5Iix.', '033514854421', 'phongbientap@gmail.com',105307758074725901875, 'Trần Minh Phong', 'Vũng Tàu', '2004-10-17', 0, 2, 0, 0, 0, NULL, NULL, NULL, NULL);
 
 SET FOREIGN_KEY_CHECKS = 1;
