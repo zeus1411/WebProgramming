@@ -127,10 +127,15 @@ a.tee:hover {
     height: 500px;
 }
 .search{
-    background-color: #2f46a3;
-    color: #fff;
+    background-color: #021526;
+    color: #F6F4F0;
+    border-color: #F6F4F0;
+    border-width: 2px;
 }
 .search:hover{
-    background-color: #1c2a61;
-    color: #fff;
+    background-color: #F6F4F0;
+    color: #021526;
+}
+.dropdown-toggle::after {
+    display: none; /* Hides the dropdown icon */
 }

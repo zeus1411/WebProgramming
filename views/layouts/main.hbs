@@ -14,74 +14,88 @@
     <script src="https://kit.fontawesome.com/a076d05399.js"></script>
 </head>
 <body>
-
-    <div class="container" ><div class="row">
-    <div class="col-sm-2 text-center">
-    <a href="/"><img src="/public/images/logo.PNG" width="146.496px" height="55.381px"></a>
-    </div>
-    <div class="col-sm-6" style="margin: auto;">
-    <center>
-    <form class="form-inline" action="/search" method="POST">
-    <input class="form-control mr-sm-2" type="text" name="search" id="search" placeholder="Nhập nội dung tìm kiếm" style="
-    width: 426px;" required>    
-    <button class="btn search" type="submit"><i class="fas fa-search"></i>Tìm Kiếm</button>
-    </form>
-    </center></div>
-    <div class="col-sm-3 text-right" style="margin: auto;">
-    {{#if lcIsAuthenticated}}     
-        <div class="btn-group">
-            <button type="button" class="btn btn-light dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <img src="/public/images/noavatar.jpg" height="24" width="24" class="rounded-circle" alt="">
-                {{lcAuthUser.UserName}}
-            </button>
-            <div class="dropdown-menu dropdown-menu-right">
-                <div class="dropdown-item border-bottom">
-                    <i class="far fa-money-bill-alt"></i> {{lcAuthUser.tien}} VNĐ<br/>
-                    Tài khoản Premium
-                </div>
-                <a class="dropdown-item" href="/profile"><i class="far fa-address-card"></i> Cá nhân</a>
-                {{#if lcWriter}}
-                    <a class="dropdown-item" href="/writerpanel"><i class="fas fa-user-cog"></i> Writer Panel</a>
-                {{/if}}
-                {{#if lcEditor}}
-                    <a class="dropdown-item" href="/editorpanel"><i class="fas fa-user-cog"></i> Editor Panel</a>
-                {{/if}}
-                {{#if lcAdmin}}
-                    <a class="dropdown-item border-bottom" href="/admin"><i class="fas fa-user-cog"></i> Admin Panel</a>
-                {{/if}}
-                <a href="/dangxuat" class="dropdown-item"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
-
-            </div>
-        </div>
-    {{else}}
-        <a href="/dangky" class="btn btn-light border text-secondary"><i class="fas fa-user-plus"></i> Đăng ký</a>
-        <a href="/dangnhap" class="btn btn-light border text-secondary"><i class="fas fa-user"></i> Đăng nhập</a>
-    {{/if}}
-    </div>
-    
-    </div>
-      </div> 
-
-    <div class="sticky-top" style="z-index: 3;">
-    <nav class="navbar navbar-dark" style="
-    padding: 0px 137px 0px 137px;
-    margin-left: 0px;
-    background-color: #2f46a3";>
-        <div id="menu">
-            <ul>
-            <li>
-                <a href="/post/hot">NÓNG</a>
-            </li>
-            <li>
-                <a href="/post/new">MỚI</a>
-            </li>
-            </ul>
-        </div>
-        
-        <button class="navbar-toggler " type="button" data-toggle="dropdown" data-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #021526;">
+        <a href="/"><img src="/public/images/logo.PNG" width="109.872px" height="41.535px"></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
+
+        <form class="form-inline ml-2 ml-lg-3" action="/search" method="POST">
+            <input class="form-control mr-sm-2" type="text" name="search" id="search" placeholder="Nhập nội dung tìm kiếm" style="
+            width: 426px;" required>    
+            <button class="btn search" type="submit"><i class="fas fa-search"></i>Search</button>
+        </form>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class ="nav nav-link" href="/post/hot" >NÓNG</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class ="nav nav-link" href="/post/new">MỚI</a>
+                </li>
+
+                <li class="nav-item dropdown">
+                    {{#if lcIsAuthenticated}}     
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                            <img src="/public/images/noavatar.jpg" height="24" width="24" class="rounded-circle" alt="">
+                            {{lcAuthUser.UserName}}
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="dropdown-item border-bottom">
+                                <i class="far fa-money-bill-alt"></i> {{lcAuthUser.tien}} VNĐ<br/>
+                                Tài khoản Premium
+                            </div>
+                            <a class="dropdown-item" href="/profile"><i class="far fa-address-card"></i> Cá nhân</a>
+                            {{#if lcWriter}}
+                                <a class="dropdown-item" href="/writerpanel"><i class="fas fa-user-cog"></i> Writer Panel</a>
+                            {{/if}}
+                            {{#if lcEditor}}
+                                <a class="dropdown-item" href="/editorpanel"><i class="fas fa-user-cog"></i> Editor Panel</a>
+                            {{/if}}
+                            {{#if lcAdmin}}
+                                <a class="dropdown-item border-bottom" href="/admin"><i class="fas fa-user-cog"></i> Admin Panel</a>
+                            {{/if}}
+                            <a href="/dangxuat" class="dropdown-item" style="color:red"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
+                            </div>  
+                </li>
+
+                {{else}}
+                <li class="nav-item">
+                    <a class ="nav nav-link" href="/dangky"><i class="fas fa-user-plus"></i> Đăng ký</a>
+                </li>
+                <li class="nav-item">
+                    <a class ="nav nav-link" href="/dangnhap"><i class="fas fa-user"></i> Đăng nhập</a>
+                </li>
+                {{/if}}
+            </ul>
+
+        </div>
     </nav>
+
+    <div class="sticky-top" style="z-index: 3;">
+    <nav class="navbar" style=" padding: 0px 137px 0px 137px; margin-left: 0px; background-color: #2f46a3";>
+        <div id="menu">
+            <ul>
+                {{#each lcCategories}}
+                    <li>
+                        <div class="dropdown">
+                            <div class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                Your Dropdown Text
+                            </div>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="#">Item 1</a>
+                                <a class="dropdown-item" href="#">Item 2</a>
+                                <a class="dropdown-item" href="#">Item 3</a>
+                            </div>
+                        </div>                    
+                    </li>
+                {{/each}}
+            </ul>
+        </div>
+    </nav>
+    
     <div class="collapse" id="navbarToggleExternalContent">
     <div class="shadow-sm p-4 "><div class="container">
                 <div class="row">
