@@ -47,8 +47,12 @@ export default {
 
   // Lấy danh mục theo CID (trả về 1 đối tượng hoặc null)
   singleByCID: async function (id) {
-    const row = await db('categories').where({ CID: id });
-    return row || null;
+    try {
+      const category = await db('categories').where('CID', id);
+      return category;
+    } catch (error) {
+      throw new Error('Lỗi khi lấy danh mục con theo CID');
+    }
   },
 
   singleByCID2: async function (id) {

@@ -75,49 +75,26 @@
     </nav>
 
     <div class="sticky-top" style="z-index: 3;">
-    <nav class="navbar" style=" padding: 0px 137px 0px 137px; margin-left: 0px; background-color: #2f46a3";>
+    <nav class="navbar" style=" padding: 0px 137px; background-color: #2f46a3";>
         <div id="menu">
             <ul>
                 {{#each lcCategories}}
-                    <li>
-                        <div class="dropdown">
-                            <div class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                                Your Dropdown Text
-                            </div>
-                            <div class="dropdown-menu">
-                                <a class="dropdown-item" href="#">Item 1</a>
-                                <a class="dropdown-item" href="#">Item 2</a>
-                                <a class="dropdown-item" href="#">Item 3</a>
-                            </div>
-                        </div>                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link" href="/cat/{{CID}}" role="button">
+                            {{CName}}
+                        </a>
+                        <div class="dropdown-menu">
+                            {{#each subcategories}}
+                                <a href="/subcat/{{SCID}}" class="dropdown-item" style="color: #000;">{{SCName}}</a>
+                            {{/each}}
+                        </div>                  
                     </li>
                 {{/each}}
             </ul>
         </div>
     </nav>
-    
-    <div class="collapse" id="navbarToggleExternalContent">
-    <div class="shadow-sm p-4 "><div class="container">
-                <div class="row">
+    </div>
 
-        {{#each lcCategories}}
-            <div class="col-sm-2" style="{{xd}} margin-right: 30px">
-                <div class="chuyenmuc"><a href="/cat/{{CID}}">{{CName}}</a></div>
-                    {{#each subcategories}}
-                    <div class="subcate">
-                        <a href="/subcat/{{SCID}}" class="text-dark">{{SCName}}</a>
-                    </div>
-                    {{/each}}
-            </div>
-            <div class="khoangtrang"></div>
-        {{/each}}   
-             </div> 
-
-    </div>
-    </div>
-    </div>
-    </div>
-    </div>
    
     <div class="container">
     <div class="khoangtrang"></div>

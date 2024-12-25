@@ -21,7 +21,6 @@ const getPostDetails = async (post) => {
 };
 
 router.get('/cat/:id', async function (req, res) {
-    try {
       const id = +req.params.id; // Convert the ID to a number
       const category = await categoryModel.singleByCID(id);
       const subcate = await subcategoryModel.getSingleForUserByCID(id);
@@ -40,10 +39,6 @@ router.get('/cat/:id', async function (req, res) {
         subcategory,
         post: detailedPosts // Pass the detailed posts to the view
       });
-    } catch (error) {
-      console.error(error);
-      res.status(500).send('Internal Server Error');
-    }
   });
 
 router.get('/subcat/:id', async function (req, res) {

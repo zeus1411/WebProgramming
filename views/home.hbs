@@ -47,7 +47,7 @@
 </div>
 <div class="row" style="margin-top: 50px;">
     <div class="col-sm-6" >
-        <div class="bg-light text-success chuyenmuc"><h5>Tin mới</h5></div>
+        <div class="bg-light text chuyenmuc"><h5>Tin mới</h5></div>
         <p></p>
         <div class="row">
         {{#each this.new10}}
@@ -64,7 +64,7 @@
         </div>
     </div>
     <div class="col-sm-6">
-        <div class="bg-light text-success chuyenmuc"><h5>Tin nóng</h5></div>
+        <div class="bg-light text chuyenmuc"><h5>Tin nóng</h5></div>
         <p></p>
         <div class="row">
         {{#each this.hot10}}
@@ -83,7 +83,7 @@
 </div>
 <p></p>
 {{#each this.category}}
-  <div class="bg-light text-success chuyenmuc"><h4><a class="text-dark" href="/cat/{{CID}}">{{CName}}</a></h4></div>
+  <div class="bg-light text chuyenmuc"><h4><a class="text-dark" href="/cat/{{CID}}">{{CName}}</a></h4></div>
   <div class="container">
   {{#each subcategory}}
     <a class="text-dark" href="/subcat/{{SCID}}"><i class="far fa-bookmark"></i> {{SCName}}</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
