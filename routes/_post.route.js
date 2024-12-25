@@ -8,11 +8,15 @@ import userModel from '../models/user.model.js';
 import multer from 'multer';
 import commentModel from '../models/comment.model.js';
 import expressHandlebarsSections from 'express-handlebars-sections';
-
+import PDFDocument from 'pdfkit';
+import fs from 'fs';
+import path from 'path';
+import { htmlToText } from 'html-to-text';
+import puppeteer from 'puppeteer';
 const router = express.Router();
 
 moment.locale('vi');
-
+const tahomaFontPath = path.join('public', 'fonts', 'tahoma.ttf');
 router.get('/new', async function (req, res) {
     const post = await _postModel.new();
     for (var i = 0; i < post.length; i++) {
@@ -64,7 +68,52 @@ router.get('/hot', async function (req, res) {
         post
     });
 });
+router.get('/:id/pdf', async function (req, res) {
+    const id = +req.params.id || -1;
 
+    const post = await postModel.singleByPostID(id);
+
+    if (!post) {
+        return res.status(404).send('Bài viết không tồn tại');
+    }
+
+    // Kiểm tra quyền truy cập Premium
+    if (post.Premium === 1 && (!req.isAuthenticated() || (req.user && req.user.Premium !== 1))) {
+        return res.status(403).send('Bạn cần tài khoản Premium để tải bài viết này');
+    }
+
+    // Chuyển đổi nội dung HTML thành plain text
+    const plainTextContent = htmlToText(post.Content || 'Không có nội dung', {
+        wordwrap: 130,
+        // Các tùy chọn để xử lý văn bản tốt hơn
+        selectors: [
+            { selector: 'img', format: 'skip' },  // Bỏ qua hình ảnh
+            { selector: 'a', options: { ignoreHref: true } },  // Bỏ qua links
+            { selector: 'p', format: 'block' }  // Giữ lại định dạng đoạn văn
+        ]
+    });
+
+    // Tạo tài liệu PDF
+    const doc = new PDFDocument();
+    const sanitizedTitle = post.PostTitle.replace(/[^a-zA-Z0-9-_ ]/g, '');
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="${sanitizedTitle}.pdf"`);
+
+    doc.pipe(res);
+
+    // Đăng ký và sử dụng font Tahoma
+    doc.registerFont('Tahoma', tahomaFontPath);
+
+    // Thêm nội dung đã được chuyển đổi vào PDF
+    doc.font('Tahoma').fontSize(20).text(post.PostTitle, { align: 'center' });
+    doc.moveDown();
+    doc.font('Tahoma').fontSize(14).text(`Tác giả: ${post.U_FullName || 'Không rõ'}\n`, { align: 'left' });
+    doc.text(`Thời gian: ${moment(post.TimePost, 'YYYY-MM-DD hh:mm:ss').format('hh:mmA DD/MM/YYYY')}\n`);
+    doc.moveDown();
+    doc.font('Tahoma').fontSize(12).text(plainTextContent);
+
+    doc.end();
+});
 router.get('/:id', async function (req, res) {
     const id = +req.params.id || -1;
     
