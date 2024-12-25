@@ -72,7 +72,8 @@ router.get('/:id/pdf', async function (req, res) {
     const id = +req.params.id || -1;
 
     const post = await postModel.singleByPostID(id);
-
+    post.Content = post.Content.replace(/<img[^>]+src="([^">]+)"[^>]*>/g, 
+        '<img src="$1" style="width: 100%; height: auto; object-fit: cover;" />');
     if (!post) {
         return res.status(404).send('Bài viết không tồn tại');
     }
