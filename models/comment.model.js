@@ -31,6 +31,16 @@ export default {
     }
   },
 
+  singleByPID: async function (id) {
+    try {
+      const result = await db('comment').where('PostID', id);
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+
   // Đếm số bình luận theo PostID
   countByPostID: async function (id) {
     try {
