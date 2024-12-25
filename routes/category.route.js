@@ -90,7 +90,7 @@ router.get('/restore/:id', async function(req, res) {
 router.get('/edit/:id', async function (req, res) {
     if (req.isAuthenticated() && req.user.Permission === 3) {
         const id = +req.params.id || -1;
-        const rows = await categoryModel.single(id);
+        const rows = await categoryModel.single2(id);
         if (rows.length === 0)
         return res.send('Invalid parameter.');
     

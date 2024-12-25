@@ -36,6 +36,10 @@ const users = {
     return await db('users').where({ UserID: id }).first(); // Đảm bảo UserID đúng
   },
 
+  async singleByUserID2(id) {
+    return await db('users').where({ UserID: id }); // Đảm bảo UserID đúng
+  },
+
   // Lấy người dùng theo username (không dùng async)
   async single(username) {
     return await db('users').where({ username }).first();
