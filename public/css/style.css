@@ -5,6 +5,42 @@ body {
 
 /* Responsive cho mobile */
 @media (max-width: 767.98px) {
+  /* Menu responsive */
+  .navbar-nav, .navbar-collapse, .dropdown-menu {
+    width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box;
+  }
+  .navbar-nav li, .navbar-nav .nav-item {
+    width: 100%;
+    text-align: left;
+  }
+  .navbar-nav .nav-link, .dropdown-menu .dropdown-item {
+    width: 100%;
+    padding-left: 16px;
+    padding-right: 16px;
+    box-sizing: border-box;
+  }
+  /* Các bảng, block bài viết */
+  .row, .container, .container-fluid {
+    width: 100% !important;
+    padding-left: 4px !important;
+    padding-right: 4px !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    box-sizing: border-box;
+  }
+  /* Sửa lỗi width cố định cho slide */
+  .slide {
+    width: 100% !important;
+    height: auto !important;
+    max-width: 100vw !important;
+  }
+  /* Ẩn thanh cuộn ngang nếu có */
+  html, body {
+    overflow-x: hidden;
+  }
+
     body {
         font-size: 15px;
         padding: 0 2vw;
