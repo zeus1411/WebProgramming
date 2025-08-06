@@ -5,6 +5,48 @@ body {
 
 /* Responsive cho mobile */
 @media (max-width: 767.98px) {
+  /* Categories menu ngang lướt được */
+  #menu ul {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    background: #2f46a3;
+    padding: 8px 0;
+    gap: 8px;
+    border: none !important;
+    margin: 0 !important;
+  }
+  #menu ul > li {
+    flex: 0 0 auto;
+    min-width: 90px;
+    padding: 7px 14px;
+    background: #fff;
+    color: #2f46a3;
+    border-radius: 16px;
+    text-align: center;
+    font-size: 15px;
+    border: none;
+    margin: 0 2px;
+    white-space: nowrap;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    position: relative;
+  }
+  #menu ul > li > a {
+    color: #2f46a3 !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0;
+  }
+  /* Ẩn dropdown-menu trên mobile hoặc chỉnh lại nếu cần */
+  #menu .dropdown-menu {
+    position: absolute;
+    left: 0;
+    top: 100%;
+    min-width: 120px;
+    z-index: 999;
+  }
+
   /* Thanh categories ngang lướt được */
   .categories-bar, .category-list {
     display: flex;
